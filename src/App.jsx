@@ -1,12 +1,30 @@
 import React from 'react';
 import './App.css';
 
+import {RouterProvider, createBrowserRouter, useRouteError} from 'react-router-dom'
+
+import Login from './Pages/Login.jsx'
+
+import PrivateRoute from './PrivateRoute.jsx';
+
+const router = createBrowserRouter([
+  { path: '/', element: <Login />, errorElement: <PageError /> },
+]);
+
 function App() {
-  return (
-    <div className="bg-blue-500 text-blue p-4">
-      <h1 className="text-2xl font-bold">Mon Application React avec Tailwind CSS</h1>
-    </div>
-  );
+  return <RouterProvider router={router} />;
 }
 
-export default App;
+function PageError() {
+  const error = useRouteError()
+  return (
+    <>
+      <h1>Désolé, la page auquel vous essayez d'accéder est indisponible ou n'existe pas</h1>
+      <p>
+        {error?.error?.toString() ?? error?.toString()}
+      </p>
+    </>
+  )
+}
+
+export default App
