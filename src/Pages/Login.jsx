@@ -44,8 +44,11 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-cover bg-center" style={{ backgroundImage: 'url("../src/assets/background-login-5.png")' }}>
-      <div className="bg-warm-gray-100 p-8 sm:w-96 rounded-lg" style={{ position: 'relative', top: '-35px' }}>
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="bg-warm-gray-100 p-8 sm:w-96 rounded-lg" style={{ position: 'relative', top: '-25px' }}>
+        <div className="flex items-center justify-center mb-6">
+          <img src="../public/Logo.png" alt="Logo de SKILLS" className="w-3/6 rounded mb-6"/>
+        </div>
         <h2 className="text-2xl font-semibold mb-4 text-center">Bienvenue parmi nous</h2>
         <div className="mb-4">
           <label className="block text-gray-700">Adresse mail :</label>
@@ -67,9 +70,12 @@ const Login = () => {
             placeholder="Mot de passe"
           />
         </div>
-        <button className="bg-custom-blue hover:bg-custom-hover-blue disabled:opacity-50 text-white p-2 rounded w-full" onClick={handleLogin}>Se connecter</button>
+        <div className='mb-2 flex justify-between'>
+          <button className="bg-custom-orange mr-4 text-custom-blue p-2 rounded-3xl w-full" onClick={handleLogin}>Annuler</button>
+          <button className="bg-custom-orange text-custom-blue p-2 rounded-3xl w-full" onClick={handleLogin}>Se connecter</button>
+        </div>
         {error && <p className="text-red-500 mt-2">{error}</p>}
-        <div className="mt-4 text-center">
+        <div className="mt-14 text-center">
           <p>Vous n'avez pas de compte ?</p>
           <Link to="/register" className="text-custom-blue underline">S'enregistrer</Link>
         </div>
