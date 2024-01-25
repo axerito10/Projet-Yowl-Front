@@ -5,12 +5,15 @@ import {RouterProvider, createBrowserRouter, useRouteError} from 'react-router-d
 
 import Login from './Pages/Login.jsx'
 import WelcomePage from './Pages/WelcomePage.jsx'
+import Register from './Pages/Register.jsx'
+
 
 import PrivateRoute from './PrivateRoute.jsx';
 
 const router = createBrowserRouter([
   { path: '/', element: <Login />, errorElement: <PageError /> },
   { path: '/WelcomePage', element: <WelcomePage />, errorElement: <PageError /> },
+  { path: '/register', element: <Register /> },
 ]);
 
 function App() {
