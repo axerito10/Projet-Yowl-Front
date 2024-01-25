@@ -11,8 +11,8 @@ import Register from './Pages/Register.jsx'
 import PrivateRoute from './PrivateRoute.jsx';
 
 const router = createBrowserRouter([
-  { path: '/', element: <Login />, errorElement: <PageError /> },
-  { path: '/WelcomePage', element: <WelcomePage />, errorElement: <PageError /> },
+  { path: '/login', element: <Login /> },
+  { path: '/', element: <WelcomePage />, errorElement: <PageError /> },
   { path: '/register', element: <Register /> },
 ]);
 

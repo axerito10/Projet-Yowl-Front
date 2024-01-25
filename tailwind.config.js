@@ -12,6 +12,7 @@ export const theme = {
     colors: {
       'custom-orange': 'rgb(255, 119, 1)',
       'custom-blue': 'rgb(0, 7, 69)',
+      'custom-hoverorange': 'rgb(234, 88, 12)',
     },
   },
 };
