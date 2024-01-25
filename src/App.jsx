@@ -4,11 +4,14 @@ import './App.css';
 import {RouterProvider, createBrowserRouter, useRouteError} from 'react-router-dom'
 
 import Login from './Pages/Login.jsx'
+import Register from './Pages/Register.jsx'
+
 
 import PrivateRoute from './PrivateRoute.jsx';
 
 const router = createBrowserRouter([
   { path: '/', element: <Login />, errorElement: <PageError /> },
+  { path: '/register', element: <Register /> },
 ]);
 
 function App() {
