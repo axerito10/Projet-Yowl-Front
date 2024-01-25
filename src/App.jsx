@@ -4,11 +4,13 @@ import './App.css';
 import {RouterProvider, createBrowserRouter, useRouteError} from 'react-router-dom'
 
 import Login from './Pages/Login.jsx'
+import WelcomePage from './Pages/WelcomePage.jsx'
 
 import PrivateRoute from './PrivateRoute.jsx';
 
 const router = createBrowserRouter([
   { path: '/', element: <Login />, errorElement: <PageError /> },
+  { path: '/WelcomePage', element: <WelcomePage />, errorElement: <PageError /> },
 ]);
 
 function App() {

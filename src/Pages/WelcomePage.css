@@ -1,0 +1,28 @@
+/* WelcomePage */
+.App {
+    text-align: center;
+  }
+  
+  .App-header {
+    background-color: white;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: calc(10px + 2vmin);
+    color: #000745;
+  }
+  
+  button {
+    font-size: calc(10px + 2vmin);
+    margin: 10px;
+    padding: 10px 20px;
+    border: 2px solid #ff9100; /* Bordure orange */
+    border-radius: 20px; /* Angles arrondis */
+    background-color: #ff9100; /* Fond orange */
+    border-color: #ff9100;
+    color: #000745; 
+    cursor: pointer;
+  }
+  /* Fin WelcomePage */
