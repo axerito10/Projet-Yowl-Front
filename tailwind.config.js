@@ -15,6 +15,9 @@ export const theme = {
       'custom-hoverorange': 'rgb(234, 88, 12)',
       'custom-gray': 'rgb(242, 242, 242)',
     },
+    fontFamily: {
+      'Avenir': ['Avenir', 'sans-serif'],
+    },
   },
 };
 export const plugins = [];

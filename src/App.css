@@ -2,3 +2,10 @@
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 
+@font-face {
+  font-family: 'Avenir';
+  src: url('../public/Avenir.woff2') format('woff2'),
+       url('../public/Avenir.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
