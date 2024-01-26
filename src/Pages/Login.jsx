@@ -49,11 +49,12 @@ const Login = () => {
         <div className="flex items-center justify-center mb-6">
           <img src="../public/Logo.png" alt="Logo de SKILLS" className="w-3/6 rounded mb-6"/>
         </div>
-        <h2 className="text-2xl font-semibold mb-4 text-center">Bienvenue parmi nous</h2>
+        <h2 className="text-2xl font-semibold mb-4 text-center">Bon retour parmi nous</h2>
+        {error && <p className="text-red-500 mt-2">{error}</p>}
         <div className="mb-4">
           <label className="block text-gray-700">Adresse mail :</label>
           <input
-            className="w-full border p-2 rounded"
+            className="w-full border p-2 rounded focus:outline-none focus:border-custom-orange bg-custom-gray"
             type="text"
             value={email}
             onChange={handleEmailChange}
@@ -63,7 +64,7 @@ const Login = () => {
         <div className="mb-4">
           <label className="block text-gray-700">Mot de passe :</label>
           <input
-            className="w-full border p-2 rounded"
+            className="w-full border p-2 rounded focus:outline-none focus:border-custom-orange bg-custom-gray"
             type="password"
             value={password}
             onChange={handlePasswordChange}
@@ -71,13 +72,12 @@ const Login = () => {
           />
         </div>
         <div className='mb-2 flex justify-between'>
-          <button className="bg-custom-orange mr-4 text-custom-blue p-2 rounded-3xl w-full" onClick={handleLogin}>Annuler</button>
-          <button className="bg-custom-orange text-custom-blue p-2 rounded-3xl w-full" onClick={handleLogin}>Se connecter</button>
+          <Link to="/" className="bg-custom-orange hover:bg-custom-hoverorange text-custom-blue mr-4 p-2 rounded-3xl w-full text-center">ANNULER</Link>
+          <button className="bg-custom-orange text-custom-blue p-2 rounded-3xl w-full" onClick={handleLogin}>SE CONNECTER</button>
         </div>
-        {error && <p className="text-red-500 mt-2">{error}</p>}
         <div className="mt-14 text-center">
           <p>Vous n'avez pas de compte ?</p>
-          <Link to="/register" className="text-custom-blue underline">S'enregistrer</Link>
+          <Link to="/register" className="text-blue-500 underline">S'enregistrer</Link>
         </div>
         <div className=' text-center '>
           <Link to="/" className="text-black italic text-xs">Continuer sans s'enregistrer</Link>

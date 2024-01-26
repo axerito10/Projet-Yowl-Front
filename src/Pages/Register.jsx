@@ -6,7 +6,7 @@ const Register = () => {
     username: '',
     email: '',
     password: '',
-    confirmPassword: '', // Ajout d'un champ pour la confirmation du mot de passe
+    confirmPassword: '',
     role: '1',
     confirmed: true,
   });
@@ -24,13 +24,11 @@ const Register = () => {
     e.preventDefault();
 
     try {
-      // Vérifier si les mots de passe correspondent
       if (formData.password !== formData.confirmPassword) {
         setFeedback("Les mots de passe ne correspondent pas.");
         return;
       }
 
-      // Ne pas inclure confirmPassword dans la requête
       const { confirmPassword, ...postData } = formData;
 
       const response = await fetch('http://localhost:1337/api/users?populate=*', {
@@ -56,12 +54,15 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-cover bg-center" style={{ backgroundImage: 'url("../src/assets/background-login-5.png")' }}>
-      <div className="bg-warm-gray-100 p-8 sm:w-96 rounded-lg" style={{ position: 'relative', top: '-40px' }}>
+    <div className="min-h-screen flex items-center justify-center bg-cover bg-center">
+      <div className="bg-warm-gray-100 p-8 sm:w-96 rounded-lg" style={{ position: 'relative' }}>
+        <div className="flex items-center justify-center mb-6">
+          <img src="../public/Logo.png" alt="Logo de SKILLS" className="w-2/6 rounded mb-6"/>
+        </div>
         <h2 className="text-2xl font-semibold text-center mb-6">Bienvenue parmi nous</h2>
 
         {feedback && (
-          <div className="mb-4 text-red-600">
+          <div className="mb-4 text-custom-orange">
             {feedback}
           </div>
         )}
@@ -76,8 +77,9 @@ const Register = () => {
               id="username"
               name="username"
               value={formData.username}
+              placeholder="Nom d'utilisateur"
               onChange={handleChange}
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-blue-500"
+              className="w-full bg-custom-gray px-4 py-2 border rounded-md focus:outline-none focus:border-custom-orange"
               required
             />
           </div>
@@ -89,9 +91,10 @@ const Register = () => {
               type="email"
               id="email"
               name="email"
+              placeholder="Adresse mail"
               value={formData.email}
               onChange={handleChange}
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-blue-500"
+              className="w-full bg-custom-gray px-4 py-2 border rounded-md focus:outline-none focus:border-custom-orange"
               required
             />
           </div>
@@ -103,9 +106,10 @@ const Register = () => {
               type="password"
               id="password"
               name="password"
+              placeholder="Mot de passe"
               value={formData.password}
               onChange={handleChange}
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-blue-500"
+              className="w-full bg-custom-gray px-4 py-2 border rounded-md focus:outline-none focus:border-custom-orange"
               required
             />
           </div>
@@ -117,19 +121,20 @@ const Register = () => {
               type="password"
               id="confirmPassword"
               name="confirmPassword"
+              placeholder="Confirmation du mot de passe"
               value={formData.confirmPassword}
               onChange={handleChange}
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-blue-500"
+              className="w-full px-4 bg-custom-gray py-2 border rounded-md focus:outline-none focus:border-custom-orange"
               required
             />
           </div>
+          <div>
 
-          <button
-            type="submit"
-            className="w-full bg-blue-500 text-white p-3 rounded-md hover:bg-blue-600 focus:outline-none"
-          >
-            S'inscrire
-          </button>
+          </div>
+          <div className='mb-2 mt-2 flex justify-between'>
+            <Link to="/" className="bg-custom-orange hover:bg-custom-hoverorange text-custom-blue mr-4 p-2 rounded-3xl w-full text-center">ANNULER</Link>
+            <button className="bg-custom-orange hover:bg-custom-hoverorange text-custom-blue p-2 rounded-3xl w-full" onClick={handleSubmit}>S'INSCRIRE</button>
+          </div>
         </form>
 
         <div className="mt-4 text-center">
