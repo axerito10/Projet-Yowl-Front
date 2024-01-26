@@ -79,9 +79,6 @@ const Login = () => {
           <p>Vous n'avez pas de compte ?</p>
           <Link to="/register" className="text-blue-500 underline">S'enregistrer</Link>
         </div>
-        <div className=' text-center '>
-          <Link to="/" className="text-black italic text-xs">Continuer sans s'enregistrer</Link>
-        </div>
       </div>
     </div>
   );
