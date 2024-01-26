@@ -54,12 +54,12 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-cover bg-center">
+    <div className="min-h-screen flex items-center justify-center bg-cover bg-center font-Avenir">
       <div className="bg-warm-gray-100 p-8 sm:w-96 rounded-lg" style={{ position: 'relative' }}>
         <div className="flex items-center justify-center mb-6">
           <img src="../public/Logo.png" alt="Logo de SKILLS" className="w-2/6 rounded mb-6"/>
         </div>
-        <h2 className="text-2xl font-semibold text-center mb-6">Bienvenue parmi nous</h2>
+        <h2 className="text-3xl font-black text-center mb-6">Bienvenue parmi nous</h2>
 
         {feedback && (
           <div className="mb-4 text-custom-orange">

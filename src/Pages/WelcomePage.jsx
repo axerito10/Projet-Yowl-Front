@@ -1,23 +1,20 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import '../Pages/Style/WelcomePage.css'; 
+import '../Pages/Style/WelcomePage.css';
 
 const App = () => {
   const navigate = useNavigate();
 
-  // Fonctions pour gérer les clics sur les boutons
   const handleLogin = () => {
-    // Logique de connexion ou redirection vers le composant/page de connexion
     navigate('/login');
   };
 
   const handleSignup = () => {
-    // Logique d'inscription ou redirection vers le composant/page d'inscription
     navigate('/register');
   };
 
   return (
-    <div className="App overflow-hidden"> {/* Ajoutez overflow-hidden ici */}
+    <div className="App overflow-hidden">
       <div className="App-header flex flex-col justify-center items-center min-h-screen">
         <div className="-mt"> 
           <h1 className="text-4xl font-bold flex items-center mb-12">
