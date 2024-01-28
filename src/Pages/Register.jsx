@@ -113,7 +113,7 @@ const Register = () => {
               required
             />
           </div>
-          <div className="mb-4">
+          <div className="mb-1">
             <label htmlFor="confirmPassword" className="block text-gray-600 text-sm font-medium mb-2">
               Confirmation du mot de passe*
             </label>
@@ -128,9 +128,14 @@ const Register = () => {
               required
             />
           </div>
-          <div>
-
+          
+          <div className='text-xs flex justify-end align-items-right mb-4'>
+            <input type="checkbox" className="accent-custom-orange" style={{ marginRight: '5px' }} />
+            <span>J’ai lu et j’accepte la politique de confidentialité</span>
           </div>
+
+
+
           <div className='mb-2 mt-2 flex justify-between'>
             <Link to="/" className="bg-custom-orange hover:bg-custom-hoverorange text-custom-blue mr-4 p-2 rounded-3xl w-full text-center">ANNULER</Link>
             <button className="bg-custom-orange hover:bg-custom-hoverorange text-custom-blue p-2 rounded-3xl w-full" onClick={handleSubmit}>S'INSCRIRE</button>

@@ -14,6 +14,7 @@ export const theme = {
       'custom-blue': 'rgb(0, 7, 69)',
       'custom-hoverorange': 'rgb(234, 88, 12)',
       'custom-gray': 'rgb(242, 242, 242)',
+      'custom-profile-gray': 'rgb(185, 193, 217)',
     },
     fontFamily: {
       'Avenir': ['Avenir', 'sans-serif'],
