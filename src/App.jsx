@@ -6,6 +6,9 @@ import {RouterProvider, createBrowserRouter, useRouteError} from 'react-router-d
 import Login from './Pages/Login.jsx'
 import WelcomePage from './Pages/WelcomePage.jsx'
 import Register from './Pages/Register.jsx'
+import HomePage from './Pages/HomePage.jsx';
+import GroupDetailPage from './Pages/GroupDetailPage.jsx';
+import CategoryPage from './Pages/CategoryPage.jsx';
 import Profil from './Pages/Profil.jsx'
 
 
@@ -15,6 +18,9 @@ const router = createBrowserRouter([
   { path: '/login', element: <Login /> },
   { path: '/', element: <WelcomePage />, errorElement: <PageError /> },
   { path: '/register', element: <Register /> },
+  { path: '/home', element: <HomePage />, errorElement: <PageError /> },
+  { path: '/group/:id', element: <GroupDetailPage />, errorElement: <PageError /> },
+  { path: "/categorie/:categoryName", element: <CategoryPage />, errorElement: <PageError /> },
   { path: '/profil', element: <Profil /> },
 
 ]);
