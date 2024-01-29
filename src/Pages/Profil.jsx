@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { logout, getToken } from '../helpers';
-import { BsPencilSquare, BsPersonGear } from "react-icons/bs";
+import { BsPersonGear } from "react-icons/bs";
+import { FaPowerOff } from "react-icons/fa6";
 import defaultImage from '../../public/no-profil-picture.png';
 
 const Profil = () => {
@@ -12,14 +13,11 @@ const Profil = () => {
 
     const navigate = useNavigate();
 
-    // Fonction pour le bouton de déconnexion
     const handleLogout = () => {
         logout();
-        // Mettez à jour l'état de connexion ici si nécessaire
-        navigate('/');
+        navigate('/login'); 
     };
 
-    // Fonction de récupération des données utilisateur
     useEffect(() => {
         const fetchUserData = async () => {
             try {
@@ -35,7 +33,6 @@ const Profil = () => {
                     const data = await response.json();
                     setUserData(data);
 
-                    // Récupérer les bannières des groupes
                     const banners = await Promise.all(data.mesGroupes.map(async (groupe) => {
                         const groupeResponse = await fetch(`http://localhost:1337/api/groupes/${groupe.id}?populate=*`, {
                             method: 'GET',
@@ -77,48 +74,70 @@ const Profil = () => {
         return <p className="text-center mt-4">Erreur : {error}</p>;
     }
 
+
     return (
-        <div className="bg-cover bg-center h-screen font-Avenir" style={{ backgroundImage: "url('../../public/background-profil-page.jpg')" }}>
-            <div className="container mx-auto p-4">
-                <div className='absolute top-4 right-10'>
-                    <Link to="/editprofile" className='text-custom-orange text-4xl'><BsPersonGear /></Link>
-                </div>
-                <img className="rounded-full h-32 w-32 mx-auto mb-4" src={"http://localhost:1337" + userData.Photo.url} alt="Photo de profil" />
-                <h1 className='text-2xl font-bold text-center mb-2'>Bonjour <span className='text-custom-orange'>{userData.username}</span></h1>
-                <div className='text-center mb-4 md:w-2/12 mx-auto'>
-                    <h2 className='text-custom-profile-gray mb-1'>Votre adresse mail :</h2>
-                    <p className='text-custom-blue border-custom-gray border-b-2 mb-4'>{userData.email}</p>
-                    <h2 className='text-custom-profile-gray mb-1'>Votre numéro de téléphone:</h2>
-                    <p className='text-custom-blue border-custom-gray border-b-2 mb-4'>+33 {userData.telephone}</p>
-                </div>
-                <h1 className='text-xl font-bold text-custom-profile-gray mb-2 text-center'>Vos groupes</h1>
-
-                {/* Affichage des bannières, titres et descriptions des groupes créés par l'utilisateur*/}
-                {groupBanners.map((banniere, index) => (
-                    <div key={index} className="mb-4 relative w-2/3 mx-auto">
-                        {banniere ? (
-                            <img className='w-full z-1 h-auto mb-2 rounded-xl' src={"http://localhost:1337" + banniere.data.attributes.url} alt={`Bannière du groupe ${userData.mesGroupes[index].Titre}`} />
-                        ) : (
-                            <p className="text-center">Aucune bannière disponible pour le groupe {userData.mesGroupes[index].Titre}</p>
-                        )}
-                        <div className="z-4 absolute bottom-0 left-0 w-full h-full flex flex-col justify-end p-4 text-white">
-                            <h2 className="text-xs md:text-xl z-4 font-black mb-2">{userData.mesGroupes[index].Titre}</h2>
-                            <p className='text-xs z-4'>{userData.mesGroupes[index].Description}</p>
-                        </div>
-
-                        <div className="absolute top-4 right-4">
-                            <Link to={`/modificategroupe/${userData.mesGroupes[index].id}`} className="bg-custom-orange hover:bg-custom-hoverorange text-custom-blue p-2 rounded-full w-10 h-10 flex items-center justify-center">
-                                <BsPencilSquare className="text-white cursor-pointer" />
-                            </Link>
-                        </div>
+        <div className="bg-white font-Avenir min-h-screen">
+            <div className="container mx-auto p-4 sm:p-6 lg:p-8">
+                <div className='flex justify-between items-center mb-10'>
+                    <img 
+                        className="rounded-full border-2 border-gray-300 h-32 w-32" 
+                        src={userData.Photo ? "http://localhost:1337" + userData.Photo.url : defaultImage} 
+                        alt="Photo de profil" 
+                    />
+                    <div className="flex items-center">
+                        <Link to="/editprofile" className='text-orange-500 text-2xl mr-4'>
+                            <BsPersonGear />
+                        </Link>
+                        <button
+                            onClick={handleLogout}
+                            className="text-orange-500 hover:bg-orange-600 transition duration-300"
+                        >
+                            <FaPowerOff />
+                        </button>
                     </div>
-                ))}
-                <div className='mx-auto text-center'>
-                    <Link to="/creategroupe" className="bg-custom-orange hover:bg-custom-hoverorange text-custom-blue mr-4 p-2 rounded-3xl w-full text-center">CRÉER UN GROUPE</Link>
+                </div>
+                
+                <div className='bg-gray-100 p-4 rounded-lg shadow-md mb-6'>
+                    <h1 className='text-2xl font-bold text-center mb-4 text-gray-800'>Bonjour, {userData.username}</h1>
+                    <p className='text-gray-600 text-center'>Votre adresse mail : {userData.email}</p>
+                    <p className='text-gray-600 text-center'>Votre numéro de téléphone : {userData.telephone ? `+33 ${userData.telephone}` : 'Non renseigné'}</p>
+                </div>
+                
+                <h2 className='text-xl font-bold text-gray-800 mb-4'>Vos groupes</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-6">
+                    {groupBanners.map((banniere, index) => (
+                        <div key={index} className="bg-white rounded-lg shadow-lg overflow-hidden transition-transform duration-300 hover:scale-105">
+                            {banniere ? (
+                                <img 
+                                    className='w-full h-40 object-cover' 
+                                    src={"http://localhost:1337" + banniere.data.attributes.url} 
+                                    alt={`Bannière du groupe ${userData.mesGroupes[index].Titre}`} 
+                                />
+                            ) : (
+                                <div className="w-full h-40 bg-gray-200 flex items-center justify-center">Aucune bannière</div>
+                            )}
+                            <div className="p-4">
+                                <h3 className="text-lg font-bold mb-2">{userData.mesGroupes[index].Titre}</h3>
+                                <p className='text-sm text-gray-600'>{userData.mesGroupes[index].Description}</p>
+                                <Link to={`/modificategroupe/${userData.mesGroupes[index].id}`} className="text-orange-500 hover:text-orange-600 inline-block mt-2">
+                                    Modifier le groupe
+                                </Link>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+    
+                <div className='text-center mb-6'>
+                    <Link 
+                        to="/creategroupe" 
+                        className="bg-orange-500 hover:bg-orange-600 text-white py-2 px-6 rounded-md transition duration-300"
+                    >
+                        CRÉER UN GROUPE
+                    </Link>
                 </div>
             </div>
         </div>
-    );
+    );      
 };
-
-export default Profil;
+    
+    export default Profil;
