@@ -6,6 +6,7 @@ import {RouterProvider, createBrowserRouter, useRouteError} from 'react-router-d
 import Login from './Pages/Login.jsx'
 import WelcomePage from './Pages/WelcomePage.jsx'
 import Register from './Pages/Register.jsx'
+import Profil from './Pages/Profil.jsx'
 
 
 import PrivateRoute from './PrivateRoute.jsx';
@@ -14,6 +15,8 @@ const router = createBrowserRouter([
   { path: '/login', element: <Login /> },
   { path: '/', element: <WelcomePage />, errorElement: <PageError /> },
   { path: '/register', element: <Register /> },
+  { path: '/profil', element: <Profil /> },
+
 ]);
 
 function App() {

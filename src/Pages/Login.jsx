@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 
+
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -32,7 +33,7 @@ const Login = () => {
         sessionStorage.setItem('userId', data.user.id)
 
         setError('');
-        navigate('/home');
+        navigate('/profil'); // A CHANGER PAR /home !!!!!! JUSTE POUR DEV
       } else {
         const data = await response.json();
         setError(data.message || 'Erreur de connexion');
@@ -44,12 +45,12 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
+    <div className="min-h-screen flex items-center justify-center font-bold font-Avenir">
       <div className="bg-warm-gray-100 p-8 sm:w-96 rounded-lg" style={{ position: 'relative', top: '-25px' }}>
         <div className="flex items-center justify-center mb-6">
           <img src="../public/Logo.png" alt="Logo de SKILLS" className="w-3/6 rounded mb-6"/>
         </div>
-        <h2 className="text-2xl font-semibold mb-4 text-center">Bon retour parmi nous</h2>
+        <h2 className="text-3xl font-black mb-4 text-center">Bon retour parmi nous</h2>
         {error && <p className="text-red-500 mt-2">{error}</p>}
         <div className="mb-4">
           <label className="block text-gray-700">Adresse mail :</label>
@@ -78,9 +79,6 @@ const Login = () => {
         <div className="mt-14 text-center">
           <p>Vous n'avez pas de compte ?</p>
           <Link to="/register" className="text-blue-500 underline">S'enregistrer</Link>
-        </div>
-        <div className=' text-center '>
-          <Link to="/" className="text-black italic text-xs">Continuer sans s'enregistrer</Link>
         </div>
       </div>
     </div>
