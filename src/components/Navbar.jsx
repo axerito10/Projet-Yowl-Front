@@ -1,42 +1,40 @@
+// Navbar.jsx
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { SiScrollreveal } from "react-icons/si";
-import { IoMdStarOutline } from "react-icons/io";
-import { LuMessageSquare } from "react-icons/lu";
+import { IoIosStarOutline } from "react-icons/io";
+import { LuMessageSquare } from "react-icons/lu"; // Assurez-vous de la validité de cette icône
 import { CgProfile } from "react-icons/cg";
 
 const Navbar = () => {
+  const location = useLocation();
+  
+  const isActive = (path) => {
+    return location.pathname === path;
+  };
+
+  const activeIconClass = "text-custom-orange text-2xl"; 
+  const inactiveIconClass = "text-black text-2xl"; 
+
   return (
-    <nav className="bg-white shadow-lg">
-      <div className="max-w-6xl mx-auto px-4">
-        <div className="flex justify-between">
-          <div className="flex space-x-7">
-            <div>
-              {/* Logo Menu */}
-              <a href="#" className="flex items-center py-4 px-2">
-                <SiScrollreveal />
-              </a>
-            </div>
-            {/* Les éléments de la navbar ici */}
-            <div className="hidden md:flex items-center space-x-1">
-              <Link to="/" className="py-4 px-2 text-gray-500 font-semibold hover:text-green-500 transition duration-300"><IoMdStarOutline /></Link>
-              <Link to="/about" className="py-4 px-2 text-gray-500 font-semibold hover:text-green-500 transition duration-300"><LuMessageSquare /></Link>
-              <Link to="/contact" className="py-4 px-2 text-gray-500 font-semibold hover:text-green-500 transition duration-300"><CgProfile /></Link>
-            </div>
-          </div>
-          {/* Les icônes de la navbar */}
-          <div className="hidden md:flex items-center space-x-3 ">
-            <a href="#" className="py-4 px-2 text-gray-500 hover:text-green-500 transition duration-300">
-              <IoMdStarOutline />
-            </a>
-            <a href="#" className="py-4 px-2 text-gray-500 hover:text-green-500 transition duration-300">
-              <LuMessageSquare />
-            </a>
-            <a href="#" className="py-4 px-2 text-gray-500 hover:text-green-500 transition duration-300">
-              <CgProfile />
-            </a>
-          </div>
-        </div>
+    <nav className="fixed bottom-0 inset-x-0 p-2 flex justify-center">
+      <div className="flex justify-center items-center bg-white shadow-lg rounded-full border border-black w-full max-w-2xl">
+        <Link to="/test2" className={`flex-1 flex flex-col items-center justify-center py-2 font-semibold hover:text-custom-orange transition duration-300 ${isActive('/test2') ? activeIconClass : inactiveIconClass}`}>
+          <SiScrollreveal />
+          <span className="hidden md:block text-sm">Accueil</span>
+        </Link>
+        <Link to="/star" className={`flex-1 flex flex-col items-center justify-center py-2 font-semibold hover:text-custom-orange transition duration-300 ${isActive('/star') ? activeIconClass : inactiveIconClass}`}>
+          <IoIosStarOutline />
+          <span className="hidden md:block text-sm">Favoris</span>
+        </Link>
+        <Link to="/messages" className={`flex-1 flex flex-col items-center justify-center py-2 font-semibold hover:text-custom-orange transition duration-300 ${isActive('/messages') ? activeIconClass : inactiveIconClass}`}>
+          <LuMessageSquare />
+          <span className="hidden md:block text-sm">Message</span>
+        </Link>
+        <Link to="/profile" className={`flex-1 flex flex-col items-center justify-center py-2 font-semibold hover:text-custom-orange transition duration-300 ${isActive('/profile') ? activeIconClass : inactiveIconClass}`}>
+          <CgProfile />
+          <span className="hidden md:block text-sm">Profil</span>
+        </Link>
       </div>
     </nav>
   );
