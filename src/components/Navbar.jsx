@@ -19,7 +19,7 @@ const Navbar = () => {
   return (
     <nav className="fixed bottom-0 inset-x-0 p-2 flex justify-center">
       <div className="flex justify-center items-center bg-white shadow-lg rounded-full border border-black w-full max-w-2xl">
-        <Link to="/test2" className={`flex-1 flex flex-col items-center justify-center py-2 font-semibold hover:text-custom-orange transition duration-300 ${isActive('/test2') ? activeIconClass : inactiveIconClass}`}>
+        <Link to="/home" className={`flex-1 flex flex-col items-center justify-center py-2 font-semibold hover:text-custom-orange transition duration-300 ${isActive('/test2') ? activeIconClass : inactiveIconClass}`}>
           <SiScrollreveal />
           <span className="hidden md:block text-sm">Accueil</span>
         </Link>
