@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { IoIosArrowBack } from "react-icons/io";
+import Navbar from '../components/Navbar';
 
 const GroupDetailPage = () => {
   const [group, setGroup] = useState(null);
@@ -127,11 +128,26 @@ return (
           </div>
         )}
       </div>
-      <div className="flex justify-center items-center mt-72 mb-8">
-        <button className="bg-custom-blue text-custom-orange py-2 px-4 rounded-lg text-lg font-bold">
-          REJOINDRE
-        </button>
+      <div className="relative container mx-auto px-4 my-8">
+        {group.ImageUrl && (
+          <img 
+            src={group.ImageUrl} 
+            alt={group.Titre} 
+            className="w-1/4 h-40 object-cover rounded-lg mx-auto" 
+          />
+        )}
+
+        {/* Div pour le filtre blanc transparent */}
+        <div className="absolute top-0 left-0 w-full h-full bg-white bg-opacity-80 rounded-lg"></div>
+
+        {/* Bouton "REJOINDRE" centré */}
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+          <button className="bg-custom-orange text-custom-blue font-bold py-2 px-4 rounded-full">
+            REJOINDRE
+          </button>
+        </div>
       </div>
+      <Navbar />
     </>
   );
 };
