@@ -18,7 +18,6 @@ const firebaseApp = initializeApp({
 
 const firestore = getFirestore(firebaseApp);
 
-
 // Obtenez l'instance auth
 const auth = getAuth(firebaseApp);
 
