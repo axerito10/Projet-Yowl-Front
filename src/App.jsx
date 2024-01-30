@@ -11,12 +11,14 @@ import GroupDetailPage from './Pages/GroupDetailPage.jsx';
 import CategoryPage from './Pages/CategoryPage.jsx';
 import Profil from './Pages/Profil.jsx';
 import CreateGroup from './Pages/CreateGroupe.jsx'
+import Politique from './Pages/Politique.jsx'
 
 
 import PrivateRoute from './PrivateRoute.jsx';
 
 const router = createBrowserRouter([
   { path: '/login', element: <Login /> },
+  { path: '/politique', element: <Politique /> },
   { path: '/', element: <WelcomePage />, errorElement: <PageError /> },
   { path: '/register', element: <Register /> },
   { path: '/home', element: <HomePage />, errorElement: <PageError /> },
