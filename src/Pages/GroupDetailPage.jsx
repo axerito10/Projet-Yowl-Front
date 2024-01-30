@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { IoIosArrowBack } from "react-icons/io";
 import Navbar from '../components/Navbar';
+import { getToken } from '../helpers';
 
 const GroupDetailPage = () => {
   const [group, setGroup] = useState(null);
@@ -10,24 +11,30 @@ const GroupDetailPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch(`http://localhost:1337/api/groupes/${id}?populate=*`)
-      .then((response) => response.json())
-      .then((data) => {
-        const groupData = data.data;
-        setGroup({
-          ...groupData.attributes,
-          Proprietaire: groupData.attributes.Proprietaire,
-          category: groupData.attributes.categories.data[0]?.attributes.category, // Récupération de la catégorie
-          ImageUrl: groupData.attributes.image?.data?.attributes?.url
-            ? `http://localhost:1337${groupData.attributes.image.data.attributes.url}`
-            : null,
-          Titre_contenu: groupData.attributes.Titre_contenu,
-          Description_contenu: groupData.attributes.Description_contenu,
-        });
-      })
-      .catch((error) => {
-        console.error('Error fetching group details: ', error);
+    fetch(`http://localhost:1337/api/groupes/${id}?populate=*`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${getToken()}`,
+      },
+    })
+    .then((response) => response.json())
+    .then((data) => {
+      const groupData = data.data;
+      setGroup({
+        ...groupData.attributes,
+        Proprietaire: groupData.attributes.Proprietaire,
+        category: groupData.attributes.categories.data[0]?.attributes.category, // Récupération de la catégorie
+        ImageUrl: groupData.attributes.image?.data?.attributes?.url
+          ? `http://localhost:1337${groupData.attributes.image.data.attributes.url}`
+          : null,
+        Titre_contenu: groupData.attributes.Titre_contenu,
+        Description_contenu: groupData.attributes.Description_contenu,
       });
+    })
+    .catch((error) => {
+      console.error('Error fetching group details: ', error);
+    });
   }, [id]);
 
   const handleCategoryClick = () => {
