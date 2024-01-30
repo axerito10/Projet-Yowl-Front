@@ -5,32 +5,39 @@ import "slick-carousel/slick/slick-theme.css";
 import '../Pages/Style/WelcomePage.css';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
+import { getToken } from '../helpers';
 
 const HomePage = () => {
   const [groups, setGroups] = useState([]);
 
   useEffect(() => {
-    fetch('http://localhost:1337/api/groupes?populate=*')
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data)
-        const transformedGroups = data.data.map(item => {
-          const imageUrl = item.attributes.image?.data?.attributes?.url
-            ? `http://localhost:1337${item.attributes.image.data.attributes.url}`
-            : null;
+    fetch('http://localhost:1337/api/groupes?populate=*', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${getToken()}`,
+      },
+    })
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(data);
+      const transformedGroups = data.data.map(item => {
+        const imageUrl = item.attributes.image?.data?.attributes?.url
+          ? `http://localhost:1337${item.attributes.image.data.attributes.url}`
+          : null;
 
-          return {
-            id: item.id,
-            ...item.attributes,
-            ImageUrl: imageUrl,
-          };
-        });
-        setGroups(transformedGroups);
-      })
-      .catch((error) => {
-        console.error('Error fetching data: ', error);
+        return {
+          id: item.id,
+          ...item.attributes,
+          ImageUrl: imageUrl,
+        };
       });
-  }, []); 
+      setGroups(transformedGroups);
+    })
+    .catch((error) => {
+      console.error('Error fetching data: ', error);
+    });
+  }, []);  
 
   // Paramètres de configuration pour react-slick
   const settings = {

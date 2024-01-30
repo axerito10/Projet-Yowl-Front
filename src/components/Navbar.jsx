@@ -31,7 +31,7 @@ const Navbar = () => {
           <LuMessageSquare />
           <span className="hidden md:block text-sm">Message</span>
         </Link>
-        <Link to="/profile" className={`flex-1 flex flex-col items-center justify-center py-2 font-semibold hover:text-custom-orange transition duration-300 ${isActive('/profile') ? activeIconClass : inactiveIconClass}`}>
+        <Link to="/profil" className={`flex-1 flex flex-col items-center justify-center py-2 font-semibold hover:text-custom-orange transition duration-300 ${isActive('/profile') ? activeIconClass : inactiveIconClass}`}>
           <CgProfile />
           <span className="hidden md:block text-sm">Profil</span>
         </Link>

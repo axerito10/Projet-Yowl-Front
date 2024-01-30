@@ -1,37 +1,44 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
+import { getToken } from '../helpers';
 
 const CategoryPage = () => {
   const [groups, setGroups] = useState([]);
   const { categoryName } = useParams();
 
   useEffect(() => {
-    fetch('http://localhost:1337/api/groupes?populate=categories,image')
-      .then(response => response.json())
-      .then(data => {
-        const allGroups = data.data.map(item => {
-          const imageUrl = item.attributes.image?.data?.attributes?.url
-            ? `http://localhost:1337${item.attributes.image.data.attributes.url}`
-            : null;
+    fetch('http://localhost:1337/api/groupes?populate=categories,image', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${getToken()}`,
+      },
+    })
+    .then(response => response.json())
+    .then(data => {
+      const allGroups = data.data.map(item => {
+        const imageUrl = item.attributes.image?.data?.attributes?.url
+          ? `http://localhost:1337${item.attributes.image.data.attributes.url}`
+          : null;
 
-          const groupCategories = item.attributes.categories?.data?.map(c => c.attributes.category) || [];
-          const isCategoryMatch = groupCategories.includes(categoryName);
+        const groupCategories = item.attributes.categories?.data?.map(c => c.attributes.category) || [];
+        const isCategoryMatch = groupCategories.includes(categoryName);
 
-          return {
-            id: item.id,
-            ...item.attributes,
-            imageUrl, // Assurez-vous que cette propriété est utilisée pour l'image
-            isCategoryMatch,
-          };
-        });
-
-        const filteredGroups = allGroups.filter(group => group.isCategoryMatch);
-        setGroups(filteredGroups);
-      })
-      .catch(error => {
-        console.error('Error fetching data: ', error);
+        return {
+          id: item.id,
+          ...item.attributes,
+          imageUrl, // Assurez-vous que cette propriété est utilisée pour l'image
+          isCategoryMatch,
+        };
       });
+
+      const filteredGroups = allGroups.filter(group => group.isCategoryMatch);
+      setGroups(filteredGroups);
+    })
+    .catch(error => {
+      console.error('Error fetching data: ', error);
+    });
   }, [categoryName]);
 
   return (
