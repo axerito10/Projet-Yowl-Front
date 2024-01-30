@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { logout, getToken } from '../helpers';
+import { logout, getToken } from '../services/helpers';
 import { BsPencilSquare, BsPersonGear } from "react-icons/bs";
 import defaultImage from '../../public/no-profil-picture.png';
 
@@ -47,7 +47,7 @@ const Profil = () => {
 
                         if (groupeResponse.ok) {
                             const groupeData = await groupeResponse.json();
-                            return groupeData.data.attributes.Banniere;
+                            return groupeData.data.attributes.image;
                         } else {
                             throw new Error(`Erreur lors de la récupération de la bannière du groupe ${groupe.id}`);
                         }

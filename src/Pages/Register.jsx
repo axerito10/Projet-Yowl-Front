@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -9,6 +10,7 @@ const Register = () => {
     confirmPassword: '',
     role: '1',
     confirmed: true,
+    privacyPolicyChecked: false,
   });
   const [feedback, setFeedback] = useState(null);
   const navigate = useNavigate();
@@ -16,7 +18,7 @@ const Register = () => {
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [e.target.name]: e.target.type === 'checkbox' ? e.target.checked : e.target.value,
     });
   };
 
@@ -29,25 +31,39 @@ const Register = () => {
         return;
       }
 
-      const { confirmPassword, ...postData } = formData;
+      if (!formData.privacyPolicyChecked) {
+        setFeedback("Veuillez accepter la politique de confidentialité.");
+        return;
+      }
 
-      const response = await fetch('http://localhost:1337/api/users?populate=*', {
+      const auth = getAuth();
+      const { confirmPassword, role, confirmed, privacyPolicyChecked, ...postData } = formData;
+
+      // Créez un nouvel utilisateur avec l'adresse e-mail et le mot de passe sur Firebase
+      const firebaseUser = await createUserWithEmailAndPassword(auth, postData.email, postData.password);
+
+      // Enregistrez l'utilisateur sur votre API Strapi
+      await fetch('http://localhost:1337/api/users?populate=*', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(postData),
+        body: JSON.stringify({
+          username: postData.username,
+          email: postData.email,
+          password: postData.password,
+          confirmed: true,
+          role: '1',
+        }),
       });
-
-      const data = await response.json();
 
       setFeedback('Inscription réussie! Redirection vers la page de connexion...');
 
       setTimeout(() => navigate('/login'), 2000);
 
-      console.log('Données soumises avec succès:', data);
+      console.log('Utilisateur enregistré avec succès sur Firebase et sur Strapi!');
     } catch (error) {
-      console.error('Erreur lors de la soumission du formulaire:', error);
+      console.error('Erreur lors de l\'inscription:', error);
 
       setFeedback("Une erreur s'est produite lors de l'inscription. Veuillez réessayer.");
     }
@@ -130,11 +146,17 @@ const Register = () => {
           </div>
           
           <div className='text-xs flex justify-end align-items-right mb-4'>
-            <input type="checkbox" className="accent-custom-orange" style={{ marginRight: '5px' }} />
-            <span>J’ai lu et j’accepte la politique de confidentialité</span>
+            <input
+              type="checkbox"
+              id="privacyPolicy"
+              name="privacyPolicyChecked"
+              className="accent-custom-orange"
+              style={{ marginRight: '5px' }}
+              checked={formData.privacyPolicyChecked}
+              onChange={handleChange}
+            />
+            <label htmlFor="privacyPolicy">J’ai lu et j’accepte la politique de confidentialité</label>
           </div>
-
-
 
           <div className='mb-2 mt-2 flex justify-between'>
             <Link to="/" className="bg-custom-orange hover:bg-custom-hoverorange text-custom-blue mr-4 p-2 rounded-3xl w-full text-center">ANNULER</Link>
