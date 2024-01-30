@@ -131,7 +131,8 @@ const Register = () => {
           
           <div className='text-xs flex justify-end align-items-right mb-4'>
             <input type="checkbox" className="accent-custom-orange" style={{ marginRight: '5px' }} />
-            <span>J’ai lu et j’accepte la politique de confidentialité</span>
+            <span>J’ai lu et j’accepte</span>
+            <Link to="/politique" className="text-blue-500 underline">la politique de confidentialité</Link>
           </div>
 
 

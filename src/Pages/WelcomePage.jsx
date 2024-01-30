@@ -1,9 +1,12 @@
+// App.js
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import CookiePopup from './CookiePopup.jsx';
 import '../Pages/Style/WelcomePage.css';
 
 const App = () => {
   const navigate = useNavigate();
+  const [showCookiePopup, setShowCookiePopup] = useState(true);
 
   const handleLogin = () => {
     navigate('/login');
@@ -13,8 +16,13 @@ const App = () => {
     navigate('/register');
   };
 
+  const closeCookiePopup = () => {
+    setShowCookiePopup(false);
+  };
+
   return (
     <div className="App overflow-hidden">
+      {showCookiePopup && <CookiePopup onClose={closeCookiePopup} />}
       <div className="App-header flex flex-col justify-center items-center min-h-screen">
         <div className="-mt"> 
           <h1 className="text-4xl font-bold flex items-center mb-12">
