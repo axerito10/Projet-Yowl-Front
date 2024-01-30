@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../services/AuthContext.jsx';
 
 
 const Login = () => {
@@ -7,6 +8,7 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { login: loginFirebase, isAuthenticated, authError } = useAuth();
 
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
@@ -18,31 +20,40 @@ const Login = () => {
 
   const handleLogin = async () => {
     try {
-      const response = await fetch('http://localhost:1337/api/auth/local', {
+      const responseStrapi = await fetch('http://localhost:1337/api/auth/local', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ identifier: email, password }),
       });
-
-      if (response.ok) {
-        console.log('Connexion réussie');
-        const data = await response.json();
-        sessionStorage.setItem('jwt', data.jwt);
-        sessionStorage.setItem('userId', data.user.id)
-
-        setError('');
-        navigate('/profil'); // A CHANGER PAR /home !!!!!! JUSTE POUR DEV
+  
+      if (responseStrapi.ok) {
+        const dataStrapi = await responseStrapi.json();
+        await loginFirebase(email, password);
+  
+        if (isAuthenticated) {
+          console.log('Connexion réussie à Firebase');
+          sessionStorage.setItem('jwt', dataStrapi.jwt);
+          sessionStorage.setItem('userId', dataStrapi.user.id);
+  
+          setError('');
+          navigate('/profil');
+        } else {
+          console.error('Erreur d\'authentification Firebase:', authError); // Ajout de cette ligne
+          setError('Erreur de connexion à Firebase');
+        }
       } else {
-        const data = await response.json();
-        setError(data.message || 'Erreur de connexion');
+        const dataStrapi = await responseStrapi.json();
+        setError(dataStrapi.message || 'Erreur de connexion');
       }
     } catch (error) {
       console.error('Erreur lors de la connexion', error);
       setError('Erreur de connexion');
     }
   };
+  
+
 
   return (
     <div className="min-h-screen flex items-center justify-center font-bold font-Avenir">

@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-import { firestore } from './services/firebase.js';
+import { firestore, firebaseApp } from './services/firebase.js';
 import { AuthProvider } from './services/AuthContext.jsx';
 import {RouterProvider, createBrowserRouter, useRouteError} from 'react-router-dom'
 

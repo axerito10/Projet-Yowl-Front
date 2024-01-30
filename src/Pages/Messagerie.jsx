@@ -1,37 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { getAuth } from "firebase/auth";
+import { firestore } from '../services/firebase.js';
 import { createConversation, addMessageToConversation } from '../services/firestoreService';
 import { useAuth } from '../services/AuthContext.jsx';
-import { collection, getDocs, query, where } from 'firebase/firestore';
-import { firestore } from '../services/firebase.js';
-import { listUsers } from '../services/firebase.js';
+import { query, collection, getDocs, where } from 'firebase/firestore';// Ajout des imports pour Firestore
 
 const Messagerie = () => {
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState([
+    { id: 'user1', email: 'user1@example.com' },
+    { id: 'user2', email: 'user2@example.com' },
+    // ... ajoutez d'autres utilisateurs au besoin
+  ]);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const { currentUser } = useAuth();
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const listUsersResult = await getAuth().listUsers();
-        const usersData = listUsersResult.users.map((userRecord) => ({
-          id: userRecord.uid,
-          email: userRecord.email,
-        }));
-        setUsers(usersData);
-      } catch (error) {
-        console.error('Erreur lors de la récupération des utilisateurs:', error);
-      }
-    };
-
-    fetchUsers();
-  }, []);
-
-  useEffect(() => {
-    const handleSearch = async () => {
+    const handleSearch = () => {
       try {
         console.log('Users:', users);
         console.log('Search Term:', searchTerm);
@@ -51,14 +36,23 @@ const Messagerie = () => {
   const handleStartConversation = async (otherUserId) => {
     try {
       // Vérifiez si une conversation existe déjà entre les deux utilisateurs
+      console.log('Current User:', currentUser);
+  
+      if (!currentUser || !currentUser.uid) {
+        console.error('Erreur: currentUser ou currentUser.uid est undefined.');
+        return;
+      }
+  
+      console.log('Current User UID:', currentUser.uid);
+  
       const existingConversationQuery = query(
         collection(firestore, 'conversations'),
         where('participants', 'array-contains', currentUser.uid),
         where('participants', 'array-contains', otherUserId)
       );
-
+  
       const existingConversationSnapshot = await getDocs(existingConversationQuery);
-
+  
       if (!existingConversationSnapshot.empty) {
         // Si une conversation existe, redirigez vers la page de la conversation
         const conversationId = existingConversationSnapshot.docs[0].id;
@@ -67,7 +61,7 @@ const Messagerie = () => {
         // Sinon, créez une nouvelle conversation
         const newConversationId = await createConversation([currentUser.uid, otherUserId]);
         console.log('Nouvelle conversation créée avec l\'ID :', newConversationId);
-
+  
         // Ajoutez un message initial à la nouvelle conversation
         const initialMessage = 'Bonjour, démarrons la conversation !';
         console.log("Adding initial message to the new conversation...");
@@ -77,6 +71,8 @@ const Messagerie = () => {
       console.error('Erreur lors du démarrage de la conversation:', error);
     }
   };
+  
+  
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">

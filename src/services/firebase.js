@@ -56,4 +56,4 @@ const sendMessage = async (senderUid, receiverUid, text) => {
   }
 };
 
-export { listUsers, sendMessage, messagesRef, firestore, database };
+export { listUsers, sendMessage, messagesRef, firestore, database, firebaseApp };

@@ -1,8 +1,6 @@
 // AuthContext.js
 import { createContext, useContext, useState, useEffect } from 'react';
-import { getAuth, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
-import * as BaseAuth from 'firebase/auth'
-
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
 
 const AuthContext = createContext();
 
@@ -22,10 +20,8 @@ export const AuthProvider = ({ children }) => {
   }, [auth]);
 
   const login = async (email, password) => {
-    // Logique de connexion avec Firebase
-    // Exemple avec createUserWithEmailAndPassword
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
       setUser(user);
     } catch (error) {
@@ -34,8 +30,6 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = async () => {
-    // Logique de déconnexion avec Firebase
-    // Exemple avec signOut
     try {
       await signOut(auth);
       setUser(null);
