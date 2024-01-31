@@ -10,6 +10,7 @@ const Register = () => {
     role: '1',
     confirmed: true,
   });
+  const [isPrivacyAccepted, setPrivacyAccepted] = useState(false);
   const [feedback, setFeedback] = useState(null);
   const navigate = useNavigate();
 
@@ -20,12 +21,46 @@ const Register = () => {
     });
   };
 
+  const handlePrivacyChange = () => {
+    setPrivacyAccepted(!isPrivacyAccepted);
+  };
+
+  const isPasswordStrong = (password) => {
+    return (
+      password.length >= 8 &&
+      /[A-Z]/.test(password) &&
+      /[a-z]/.test(password) &&
+      /\d/.test(password) &&
+      /[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]/.test(password)
+    );
+  };
+
+  const isEmailValid = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
+      if (!isPrivacyAccepted) {
+        setFeedback("Veuillez accepter la politique de confidentialité.");
+        return;
+      }
+
       if (formData.password !== formData.confirmPassword) {
         setFeedback("Les mots de passe ne correspondent pas.");
+        return;
+      }
+
+      if (!isPasswordStrong(formData.password)) {
+        setFeedback("Le mot de passe doit au moins contenir 8 caractères dont 1 spécial, ainsi que des majuscules et des minuscules");
+        return;
+      }
+
+      if (!isEmailValid(formData.email)) {
+        setFeedback("Veuillez fournir une adresse e-mail valide.");
         return;
       }
 
@@ -130,12 +165,18 @@ const Register = () => {
           </div>
           
           <div className='text-xs flex justify-end align-items-right mb-4'>
-            <input type="checkbox" className="accent-custom-orange" style={{ marginRight: '5px' }} />
-            <span>J’ai lu et j’accepte</span>
+            <input
+              type="checkbox"
+              id="privacyCheckbox"
+              className="accent-custom-orange"
+              style={{ marginRight: '5px' }}
+              checked={isPrivacyAccepted}
+              onChange={handlePrivacyChange}
+              required
+            />
+            <label htmlFor="privacyCheckbox">J’ai lu et j’accepte</label>
             <Link to="/politique" className="text-blue-500 underline">la politique de confidentialité</Link>
           </div>
-
-
 
           <div className='mb-2 mt-2 flex justify-between'>
             <Link to="/" className="bg-custom-orange hover:bg-custom-hoverorange text-custom-blue mr-4 p-2 rounded-3xl w-full text-center">ANNULER</Link>

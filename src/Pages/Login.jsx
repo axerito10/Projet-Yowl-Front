@@ -32,6 +32,41 @@ const Login = () => {
         sessionStorage.setItem('jwt', data.jwt);
         sessionStorage.setItem('userId', data.user.id)
 
+        //
+      const test = await fetch(`http://localhost:1337/api/privates/${data.user.id}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${data.jwt}`,
+      }});
+      
+      if (test.ok) {
+        console.log ("La catégorie private de cet utilisateur existe déjà")
+      }
+      else {
+        console.log(data.user.id, data.jwt)
+        const raw = {
+          "data":
+          {
+            "owner":
+            {
+              "connect": [data.user.id]
+            }
+            
+          }
+        }
+
+        await fetch(`http://localhost:1337/api/privates?populate=*`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${data.jwt}`,
+        },
+          body: JSON.stringify(raw)
+        });
+      }
+        //
+
         setError('');
         navigate('/home');
       } else {
