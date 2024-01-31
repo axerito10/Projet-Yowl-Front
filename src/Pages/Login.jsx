@@ -33,7 +33,7 @@ const Login = () => {
         sessionStorage.setItem('userId', data.user.id)
 
         setError('');
-        navigate('/profil'); // A CHANGER PAR /home !!!!!! JUSTE POUR DEV
+        navigate('/home');
       } else {
         const data = await response.json();
         setError(data.message || 'Erreur de connexion');
