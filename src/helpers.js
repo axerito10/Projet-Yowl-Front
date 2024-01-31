@@ -3,6 +3,11 @@ export const getToken = () => {
 return jwtToken
 };
 
+export const getTokenFirebase = () => {
+    const jwtTokenFirebase = sessionStorage.getItem('firebaseToken');
+return jwtTokenFirebase
+};
+
 export const getUserId = () => {
     const idUser = sessionStorage.getItem('userId');
 return idUser
