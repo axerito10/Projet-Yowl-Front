@@ -22,6 +22,63 @@ const CreateGroupForm = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [groupBanners, setGroupBanners] = useState([]);
+  const [chapters, setChapters] = useState([{ titre: '', description: '' }]);
+  const [chapterIds, setChapterIds] = useState([]);
+
+  const handleCategorySelection = (categoryId) => {
+    if (selectedCategories.includes(categoryId)) {
+      setSelectedCategories(selectedCategories.filter((id) => id !== categoryId));
+    } else {
+      setSelectedCategories([...selectedCategories, categoryId]);
+    }
+  };
+
+  const addChapter = () => {
+    setChapters([...chapters, { titre: '', description: '' }]);
+  };
+
+  // Fonction pour supprimer un chapitre du formulaire
+  const removeChapter = (index) => {
+    const newChapters = chapters.filter((_, chapIndex) => index !== chapIndex);
+    setChapters(newChapters);
+  };
+
+  // Fonction pour mettre à jour les champs des chapitres
+  const handleChapterChange = (index, field, value) => {
+    const newChapters = [...chapters];
+    newChapters[index][field] = value;
+    setChapters(newChapters);
+  };
+
+  // Fonction pour publier un chapitre à l'API
+  const publishChapter = async (index) => {
+    const chapter = chapters[index];
+    const token = getToken(); // Obtenez votre token d'authentification
+    try {
+      const response = await fetch('http://localhost:1337/api/chapitres', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ data: chapter })
+      });
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Chapitre publié :', data);
+
+        // Ajoutez l'ID du chapitre créé au tableau des IDs
+        setChapterIds(prevIds => [...prevIds, data.data.id]);
+
+        // Ici, vous pouvez gérer l'ajout de l'ID du chapitre créé au groupe
+      } else {
+        // Gérer les erreurs, par exemple afficher un message
+        console.error('Erreur lors de la publication du chapitre');
+      }
+    } catch (error) {
+      console.error('Erreur lors de la publication du chapitre', error);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -50,15 +107,46 @@ const CreateGroupForm = () => {
     setShowCategories(!showCategories);
   };
   
+  const createChapter = async (chapter) => {
+    const token = getToken();
+    const response = await fetch('http://localhost:1337/api/chapitres', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ data: chapter })
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      return data.data.id; // Return the ID of the created chapter
+    } else {
+      // Handle error
+      console.error('Error creating chapter');
+    }
+  };
+
+  // Function to handle chapter form submission
+  const addChapterAndLinkToGroup = async (index) => {
+    const id = await createChapter(chapters[index]);
+    if (id) {
+      setChapterIds(prevIds => [...prevIds, id]); // Add the new chapter's ID to the state
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
+    for (const chapter of chapters) {
+      await addChapterAndLinkToGroup(chapter);
+    }
     // Créez un objet FormData pour envoyer l'image
     const formData = new FormData();
     if (image) {
       formData.append('files.image', image); // Ajoutez l'image ici
     }
+
   
     // Créez l'objet à envoyer, avec une clé "data"
     const dataToSend = {
@@ -69,7 +157,8 @@ const CreateGroupForm = () => {
         Description_contenu: group.descriptionContenu,
         Proprietaire: group.proprietaire,
         Payant: group.payant,
-        categories: selectedCategories.map((categoryId) => categoryId), // Assurez-vous que cela correspond à ce que Strapi attend
+        categories: selectedCategories.map((categoryId) => categoryId),
+        chapitres: chapterIds,
       },
     };    
   
@@ -77,32 +166,26 @@ const CreateGroupForm = () => {
     formData.append('data', JSON.stringify(dataToSend.data));
   
     try {
-      // Envoie des données au serveur
       const response = await fetch('http://localhost:1337/api/groupes', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${userToken}`, // Utilisez le jeton de l'utilisateur
+          'Authorization': `Bearer ${userToken}`,
         },
         body: formData,
       });
 
-      console.log('User Token:', userToken); // Vérifiez que le token est correct
-  
       if (response.ok) {
-        // Traitement de la réponse réussie
         const data = await response.json();
-        console.log('Groupe créé :', data);
+        console.log('Groupe créé avec les chapitres :', data);
         // Redirection ou mise à jour de l'UI ici
       } else {
-        // Traitement de la réponse d'échec
         const errorData = await response.json();
-        console.error('Échec de la création du groupe', errorData);
+        console.error('Échec de la création du groupe avec les chapitres', errorData);
       }
     } catch (error) {
-      // Gestion des erreurs lors de la demande
-      console.error('Erreur lors de la création du groupe :', error);
+      console.error('Erreur lors de la création du groupe avec les chapitres', error);
     }
-  };   
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -195,9 +278,9 @@ const CreateGroupForm = () => {
           if (response.ok) {
             const userData = await response.json();
             setUserData(userData);
-  
-            // Ajoutez la ligne de code suivante pour convertir l'ID en chaîne de caractères
-            setGroup(prevGroup => ({ ...prevGroup, proprietaire: userData.id.toString() }));
+    
+            // Mettez à jour le champ proprietaire avec l'username de l'utilisateur
+            setGroup(prevGroup => ({ ...prevGroup, proprietaire: userData.username })); // Changez ici id par username
           } else {
             console.error('Failed to fetch user data');
           }
@@ -285,97 +368,199 @@ const CreateGroupForm = () => {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4 ml-12 mr-12">
-        <div className="mb-4">
-          <label htmlFor="imageInput" className="block text-sm font-medium text-custom-chapitre">Ajouter une image</label>
-          <input type="file" id="imageInput" onChange={handleImageChange} className="mt-1 block w-full"/>
-          <button type="button" className="mt-2 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-            Ajouter Image
-          </button>
-        </div>
 
-        <div>
-          <label htmlFor="titre" className="block text-sm font-medium text-custom-chapitre">Titre</label>
-          <input type="text" name="titre" id="titre" required
-                 onChange={handleChange} value={group.titre}
-                 className="mt-1 block w-full border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"/>
-        </div>
+      <div>
 
-        <div>
-          <label htmlFor="description" className="block text-sm font-medium text-custom-chapitre">Description</label>
-          <textarea name="description" id="description" required
-                    onChange={handleChange} value={group.description}
-                    className="mt-1 block w-full border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
-        </div>
-        <div className="mb-4">
-  <label htmlFor="category" className="block text-sm font-medium text-custom-chapitre">
-    Catégorie(s)
-  </label>
-  <button
-  type="button"
-  onClick={toggleCategories}
-  className="text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
->
-  {showCategories ? 'Masquer Catégories' : 'Voir Catégories'}
-</button>
-</div>
+      </div>
+      
+      <div className="mb-6">
+        <label 
+          htmlFor="imageInput" 
+          className="block text-sm font-medium text-gray-700 mb-2"
+        >
+          Ajouter une image
+        </label>
+        <input 
+          type="file" 
+          id="imageInput" 
+          onChange={handleImageChange} 
+          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+        />
+        <button 
+          type="button" 
+          className="mt-3 inline-flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-custom-blue bg-custom-orange hover:bg-custom-yellow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-custom-orange"
+        >
+          Ajouter Image
+        </button>
+      </div>
+
+
+      <div className="mb-6">
+        <label 
+          htmlFor="titre" 
+          className="block text-sm font-medium text-gray-700 mb-2"
+        >
+          Titre
+        </label>
+        <input 
+          type="text" 
+          name="titre" 
+          id="titre" 
+          required
+          onChange={handleChange} 
+          value={group.titre}
+          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition duration-150 ease-in-out"
+        />
+      </div>
+
+
+      <div className="mb-6">
+        <label 
+          htmlFor="description" 
+          className="block text-sm font-medium text-gray-700 mb-2"
+        >
+          Description
+        </label>
+        <textarea 
+          name="description" 
+          id="description" 
+          required
+          onChange={handleChange} 
+          value={group.description}
+          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition duration-150 ease-in-out h-32 resize-vertical"
+        ></textarea>
+      </div>
+
+      <div className="mb-6">
+        <label 
+          htmlFor="category" 
+          className="block text-sm font-medium text-gray-700 mb-2"
+        >
+          Catégorie(s)
+        </label>
+        <button
+          type="button"
+          onClick={toggleCategories}
+          className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-custom-blue bg-custom-orange hover:bg-custom-yellow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-custom-orange transition duration-150 ease-in-out"
+        >
+          {showCategories ? 'Masquer Catégories' : 'Voir Catégories'}
+          <svg className={`ml-2 -mr-0.5 h-4 w-4 ${showCategories ? 'transform rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+        </button>
+      </div>
+
 
 {showCategories && (
-  <div className="mb-4">
-    <select
-      multiple
-      id="categories" // Utilisez "categories" comme id
-      name="categories" // Utilisez "categories" comme name
-      value={selectedCategories}
-      onChange={handleCategoryChange}
-      className="mt-1 block w-full text-black"
-      style={{ backgroundColor: 'white', color: 'black' }}
-    >
+        <div className="mb-6">
+        {categories.map((category) => (
+          <div key={category.id} className="flex items-center mt-3">
+            <input
+              type="checkbox"
+              id={`category-${category.id}`}
+              className="form-checkbox h-5 w-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+              value={category.id}
+              checked={selectedCategories.includes(category.id)}
+              onChange={() => handleCategorySelection(category.id)}
+            />
+            <label htmlFor={`category-${category.id}`} className="ml-2 text-sm text-gray-700">
+              {category.name}
+            </label>
+          </div>
+        ))}
+      </div>      
+      )}
 
-       {categories.map((category) => (
-        <option
-          key={category.id}
-          value={category.id}
-          className={`block w-full text-black mt-1 ${selectedCategories.includes(category.id) ? 'bg-indigo-600 text-white' : 'bg-white text-black'} focus:ring-indigo-500`}
+      <div className="flex flex-wrap gap-2 mb-6">
+        {selectedCategories.map((categoryId) => {
+          const category = categories.find((c) => c.id === categoryId);
+          return (
+            <span key={categoryId} className="flex items-center gap-2 bg-custom-orange text-custom-blue px-3 py-1 rounded-full text-sm font-medium">
+              {category?.name}
+              <button
+                type="button"
+                onClick={() => handleCategorySelection(categoryId)}
+                className="bg-custom-orange hover:bg-custom-yellow rounded-full p-1 inline-flex items-center justify-center text-custom-blue"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+              </button>
+            </span>
+          );
+        })}
+      </div>
+
+        <div>
+          <h2 className="text-2xl font-bold mb-4 text-gray-700">CONTENU</h2>
+        </div>
+
+        <div className="space-y-4">
+          {chapters.map((chapter, index) => (
+            <div key={index} className="p-4 border border-gray-300 rounded-lg shadow">
+              <input
+                type="text"
+                placeholder="Titre du chapitre"
+                value={chapter.titre}
+                onChange={(e) => handleChapterChange(index, 'titre', e.target.value)}
+                className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              />
+              <textarea
+                placeholder="Description du chapitre"
+                value={chapter.description}
+                onChange={(e) => handleChapterChange(index, 'description', e.target.value)}
+                className="mt-2 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                rows="4"
+              ></textarea>
+              <div className="flex justify-between items-center mt-4">
+                <button
+                  type="button"
+                  onClick={() => publishChapter(index)}
+                  className="px-4 py-2 bg-custom-yellow hover:bg-custom-orange text-custom-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-yellow focus:ring-offset-2"
+                >
+                  Publier le chapitre
+                </button>
+                {chapters.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => removeChapter(index)}
+                    className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                  >
+                    Supprimer le chapitre
+                  </button>
+                )}
+              </div>
+            </div>
+          ))}
+
+        <button
+          type="button"
+          onClick={addChapter}
+          className="mt-4 px-4 py-2 bg-custom-orange hover:bg-custom-yellow text-custom-blue font-medium rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-custom-orange focus:ring-offset-2 transition duration-150 ease-in-out"
         >
-          {category.name}
-        </option>
-      ))}
+          Ajouter un chapitre
+        </button>
+      </div>
 
-    </select>
-  </div>
-)}
-
-        <div>
-          <h2 className="text-2xl font-bold mb-4 text-custom-chapitre">CONTENU</h2>
-        </div>
-        <div>
-          <label htmlFor="titre_contenu" className="block text-sm font-medium text-custom-chapitre">Titre</label>
-          <textarea name="titre_contenu" id="titre_contenu" required
-                    onChange={handleChange} value={group.titre_contenu}
-                    className="mt-1 block w-full border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
-        </div>
-
-        <div>
-          <label htmlFor="description_contenu" className="block text-sm font-medium text-custom-chapitre">Contenu</label>
-          <textarea name="description_contenu" id="description_contenu" required
-                    onChange={handleChange} value={group.description_contenu}
-                    className="mt-1 block w-full border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
-        </div>
-
-        {/* Répétez la structure ci-dessus pour les autres champs du formulaire */}
-
-        <div>
-          <label htmlFor="payant" className="flex items-center">
-            <input type="checkbox" name="payant" id="payant"
-                   onChange={handleCheckboxChange} checked={group.payant}
-                   className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"/>
-            <span className="ml-2 text-sm text-custom-chapitre">Payant</span>
+      <div className="mb-6">
+          <label htmlFor="payant" className="flex items-center cursor-pointer">
+            <input
+              type="checkbox"
+              name="payant"
+              id="payant"
+              onChange={handleCheckboxChange}
+              checked={group.payant}
+              className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded cursor-pointer"
+            />
+            <span className="ml-2 text-sm text-gray-700">Payant</span>
           </label>
         </div>
 
-        <button type="submit" className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+      <div class="mt-8 flex justify-center">
+        <button type="submit" className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-custom-blue bg-custom-orange hover:bg-custom-yellow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-custom-orange">
           Créer Groupe
         </button>
+      </div>
+      <div>
+
+      </div>
+
       </form>
     </>
   );
