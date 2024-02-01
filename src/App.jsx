@@ -13,6 +13,7 @@ import Profil from './Pages/Profil.jsx';
 import CreateGroupForm from './Pages/CreateGroupeForm.jsx';
 import Politique from './Pages/Politique.jsx';
 import Favoris from './Pages/Favoris.jsx';
+import Messagerie from './Pages/Messagerie.jsx'
 
 
 
@@ -29,6 +30,8 @@ const router = createBrowserRouter([
   { path: '/profil', element: <Profil /> },
   { path: '/creategroupe', element: <CreateGroupForm />},
   { path: '/star', element: <Favoris />},
+  { path: '/messagerie', element: <Messagerie />},
+
 
 
 ]);
