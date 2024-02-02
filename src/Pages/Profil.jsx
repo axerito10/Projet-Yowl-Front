@@ -106,26 +106,26 @@ const Profil = () => {
                 
                 <h2 className='text-xl font-bold text-gray-800 mb-4'>Vos groupes</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-6">
-                    {groupBanners.map((banniere, index) => (
-                        <div key={index} className="bg-white rounded-lg shadow-lg overflow-hidden transition-transform duration-300 hover:scale-105">
-                            {banniere ? (
-                                <img 
-                                    className='w-full h-40 object-cover' 
-                                    src={"http://localhost:1337" + banniere.data.attributes.url} 
-                                    alt={`Bannière du groupe ${userData.mesGroupes[index].Titre}`} 
-                                />
-                            ) : (
-                                <div className="w-full h-40 bg-gray-200 flex items-center justify-center">Aucune bannière</div>
-                            )}
-                            <div className="p-4">
-                                <h3 className="text-lg font-bold mb-2">{userData.mesGroupes[index].Titre}</h3>
-                                <p className='text-sm text-gray-600'>{userData.mesGroupes[index].Description}</p>
-                                <Link to={`/modificategroupe/${userData.mesGroupes[index].id}`} className="text-orange-500 hover:text-orange-600 inline-block mt-2">
-                                    Modifier le groupe
-                                </Link>
-                            </div>
+                {groupBanners.map((banniere, index) => (
+                    <div key={index} className="bg-white rounded-lg shadow-lg overflow-hidden transition-transform duration-300 hover:scale-105">
+                        {banniere && banniere.data && banniere.data.attributes ? (
+                            <img 
+                                className='w-full h-40 object-cover' 
+                                src={"http://localhost:1337" + banniere.data.attributes.url} 
+                                alt={`Bannière du groupe ${userData.mesGroupes[index].Titre}`} 
+                            />
+                        ) : (
+                            <div className="w-full h-40 bg-gray-200 flex items-center justify-center">Aucune bannière</div>
+                        )}
+                        <div className="p-4">
+                            <h3 className="text-lg font-bold mb-2">{userData.mesGroupes[index].Titre}</h3>
+                            <p className='text-sm text-gray-600'>{userData.mesGroupes[index].Description}</p>
+                            <Link to={`/modificategroupe/${userData.mesGroupes[index].id}`} className="text-orange-500 hover:text-orange-600 inline-block mt-2">
+                                Modifier le groupe
+                            </Link>
                         </div>
-                    ))}
+                    </div>
+                ))}
                 </div>
     
                 <div className='text-center mb-6'>

@@ -141,6 +141,10 @@ const CreateGroupForm = () => {
     for (const chapter of chapters) {
       await addChapterAndLinkToGroup(chapter);
     }
+
+    const owner = userData ? String(userData.id) : '';
+
+
     // Créez un objet FormData pour envoyer l'image
     const formData = new FormData();
     if (image) {
@@ -155,10 +159,11 @@ const CreateGroupForm = () => {
         Description: group.description,
         Titre_contenu: group.titreContenu,
         Description_contenu: group.descriptionContenu,
-        Proprietaire: group.proprietaire,
+        Proprietaire: owner, 
         Payant: group.payant,
         categories: selectedCategories.map((categoryId) => categoryId),
         chapitres: chapterIds,
+        owner: owner,
       },
     };    
   
@@ -173,7 +178,7 @@ const CreateGroupForm = () => {
         },
         body: formData,
       });
-
+  
       if (response.ok) {
         const data = await response.json();
         console.log('Groupe créé avec les chapitres :', data);
@@ -214,8 +219,6 @@ const CreateGroupForm = () => {
   
     fetchData();
   }, []);
-  
-   
   
 
   useEffect(() => {
