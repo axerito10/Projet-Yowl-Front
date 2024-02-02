@@ -10,9 +10,10 @@ import HomePage from './Pages/HomePage.jsx';
 import GroupDetailPage from './Pages/GroupDetailPage.jsx';
 import CategoryPage from './Pages/CategoryPage.jsx';
 import Profil from './Pages/Profil.jsx';
-import CreateGroup from './Pages/CreateGroupe.jsx'
+import CreateGroup from './Pages/CreateGroupeForm.jsx'
 import Politique from './Pages/Politique.jsx';
 import Param from './Pages/Parameters.jsx'
+import Favoris from './Pages/Favoris.jsx'
 
 
 import PrivateRoute from './PrivateRoute.jsx';
@@ -26,8 +27,8 @@ const router = createBrowserRouter([
   { path: '/group/:id', element: <GroupDetailPage />, errorElement: <PageError /> },
   { path: "/categorie/:categoryName", element: <CategoryPage />, errorElement: <PageError /> },
   { path: '/profil', element: <Profil /> },
-  { path: '/creategroupe', element: <CreateGroup />}
-  { path: '/star', element: <Favoris />},
+  { path: '/creategroupe', element: <CreateGroup />},
+  { path: '/favoris', element: <Favoris />},
   { path: '/parameters', element: <Param />}
 
 ]);
