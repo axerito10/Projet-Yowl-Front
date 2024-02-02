@@ -1,9 +1,8 @@
-// Navbar.jsx
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { SiScrollreveal } from "react-icons/si";
 import { IoIosStarOutline } from "react-icons/io";
-import { LuMessageSquare } from "react-icons/lu"; // Assurez-vous de la validité de cette icône
+import { LuMessageSquare } from "react-icons/lu"; 
 import { CgProfile } from "react-icons/cg";
 
 const Navbar = () => {
@@ -23,7 +22,7 @@ const Navbar = () => {
           <SiScrollreveal />
           <span className="hidden md:block text-sm">Accueil</span>
         </Link>
-        <Link to="/star" className={`flex-1 flex flex-col items-center justify-center py-2 font-semibold hover:text-custom-orange transition duration-300 ${isActive('/star') ? activeIconClass : inactiveIconClass}`}>
+        <Link to="/favoris" className={`flex-1 flex flex-col items-center justify-center py-2 font-semibold hover:text-custom-orange transition duration-300 ${isActive('/favoris') ? activeIconClass : inactiveIconClass}`}>
           <IoIosStarOutline />
           <span className="hidden md:block text-sm">Favoris</span>
         </Link>

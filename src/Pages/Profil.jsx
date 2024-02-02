@@ -86,7 +86,7 @@ const Profil = () => {
                         alt="Photo de profil" 
                     />
                     <div className="flex items-center">
-                        <Link to="/editprofile" className='text-orange-500 text-2xl mr-4'>
+                        <Link to="/parameters" className='text-orange-500 text-2xl mr-4'>
                             <BsPersonGear />
                         </Link>
                         <button
@@ -143,3 +143,5 @@ const Profil = () => {
 };
     
     export default Profil;
+
+    //POUR PUSH
