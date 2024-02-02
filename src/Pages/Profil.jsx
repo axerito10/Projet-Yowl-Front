@@ -4,6 +4,7 @@ import { logout, getToken } from '../helpers';
 import { BsPersonGear } from "react-icons/bs";
 import { FaPowerOff } from "react-icons/fa6";
 import defaultImage from '../../public/no-profil-picture.png';
+import Navbar from '../components/Navbar';
 
 const Profil = () => {
     const [userData, setUserData] = useState(null);
@@ -44,7 +45,7 @@ const Profil = () => {
 
                         if (groupeResponse.ok) {
                             const groupeData = await groupeResponse.json();
-                            return groupeData.data.attributes.Banniere;
+                            return groupeData.data.attributes.image;
                         } else {
                             throw new Error(`Erreur lors de la récupération de la bannière du groupe ${groupe.id}`);
                         }
@@ -85,7 +86,7 @@ const Profil = () => {
                         alt="Photo de profil" 
                     />
                     <div className="flex items-center">
-                        <Link to="/editprofile" className='text-orange-500 text-2xl mr-4'>
+                        <Link to="/parameters" className='text-orange-500 text-2xl mr-4'>
                             <BsPersonGear />
                         </Link>
                         <button
@@ -136,6 +137,7 @@ const Profil = () => {
                     </Link>
                 </div>
             </div>
+            <Navbar />
         </div>
     );      
 };
