@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../firebase-config.js';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -66,6 +68,7 @@ const Register = () => {
 
       const { confirmPassword, ...postData } = formData;
 
+      // Enregistrement sur Strapi
       const response = await fetch('http://localhost:1337/api/users?populate=*', {
         method: 'POST',
         headers: {
@@ -74,13 +77,17 @@ const Register = () => {
         body: JSON.stringify(postData),
       });
 
-      const data = await response.json();
+      const strapiData = await response.json();
+      console.log('Données soumises avec succès sur Strapi:', strapiData);
+
+      // Enregistrement sur Firebase
+      const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
+      const firebaseToken = await userCredential.user.getIdToken();
+      console.log('Inscription réussie sur Firebase', firebaseToken);
 
       setFeedback('Inscription réussie! Redirection vers la page de connexion...');
 
       setTimeout(() => navigate('/login'), 2000);
-
-      console.log('Données soumises avec succès:', data);
     } catch (error) {
       console.error('Erreur lors de la soumission du formulaire:', error);
 

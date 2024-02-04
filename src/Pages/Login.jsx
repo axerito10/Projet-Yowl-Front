@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-
+import { auth } from '../firebase-config.js'
+import { signInWithEmailAndPassword  } from 'firebase/auth'
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -65,6 +66,18 @@ const Login = () => {
           body: JSON.stringify(raw)
         });
       }
+        //
+        try {
+          const userCredential = await signInWithEmailAndPassword(auth, email, password);
+          const firebaseToken = await userCredential.user.getIdToken();
+          console.log('Connexion réussie sur Firebase', firebaseToken);
+          setError('');
+          sessionStorage.setItem('firebaseToken', firebaseToken);
+        } catch (firebaseError) {
+          console.error('Erreur lors de la connexion Firebase', firebaseError);
+          setError('Erreur de connexion Firebase');
+          return;
+        }
         //
 
         setError('');
