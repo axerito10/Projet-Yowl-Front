@@ -15,8 +15,6 @@ import Politique from './Pages/Politique.jsx';
 import Favoris from './Pages/Favoris.jsx';
 import Messagerie from './Pages/Messagerie.jsx'
 
-
-
 import PrivateRoute from './PrivateRoute.jsx';
 
 const router = createBrowserRouter([
@@ -31,9 +29,6 @@ const router = createBrowserRouter([
   { path: '/creategroupe', element: <CreateGroupForm />},
   { path: '/star', element: <Favoris />},
   { path: '/messagerie', element: <Messagerie />},
-
-
-
 ]);
 
 function App() {
