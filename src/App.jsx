@@ -12,8 +12,9 @@ import CategoryPage from './Pages/CategoryPage.jsx';
 import Profil from './Pages/Profil.jsx';
 import CreateGroup from './Pages/CreateGroupeForm.jsx'
 import Politique from './Pages/Politique.jsx';
-import Param from './Pages/Parameters.jsx'
-import Favoris from './Pages/Favoris.jsx'import Messagerie from './Pages/Messagerie.jsx'
+import Param from './Pages/Parameters.jsx';
+import Favoris from './Pages/Favoris.jsx';
+import Messagerie from './Pages/Messagerie.jsx'
 
 import PrivateRoute from './PrivateRoute.jsx';
 
@@ -29,7 +30,7 @@ const router = createBrowserRouter([
   { path: '/messagerie', element: <Messagerie />},
   { path: '/creategroupe', element: <CreateGroup />},
   { path: '/favoris', element: <Favoris />},
-  { path: '/parameters', element: <Param />}  { path: '/messagerie', element: <Messagerie />},
+  { path: '/parameters', element: <Param />}
 ]);
 
 function App() {
