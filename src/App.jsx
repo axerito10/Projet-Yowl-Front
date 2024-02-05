@@ -17,21 +17,24 @@ import Favoris from './Pages/Favoris.jsx';
 import Messagerie from './Pages/Messagerie.jsx'
 
 import PrivateRoute from './PrivateRoute.jsx';
+import AccessDenied from './Pages/AccessDenied.jsx';
 
 const router = createBrowserRouter([
   { path: '/login', element: <Login /> },
   { path: '/politique', element: <Politique /> },
   { path: '/', element: <WelcomePage />, errorElement: <PageError /> },
   { path: '/register', element: <Register /> },
-  { path: '/home', element: <HomePage />, errorElement: <PageError /> },
-  { path: '/group/:id', element: <GroupDetailPage />, errorElement: <PageError /> },
-  { path: "/categorie/:categoryName", element: <CategoryPage />, errorElement: <PageError /> },
-  { path: '/profil', element: <Profil /> },
-  { path: '/messagerie', element: <Messagerie />},
-  { path: '/creategroupe', element: <CreateGroup />},
-  { path: '/favoris', element: <Favoris />},
-  { path: '/parameters', element: <Param />}
+  { path: '/home', element: <PrivateRoute element={<HomePage />} /> },
+  { path: '/group/:id', element: <PrivateRoute element={<GroupDetailPage />} /> },
+  { path: "/categorie/:categoryName", element: <PrivateRoute element={<CategoryPage />} /> },
+  { path: '/profil', element: <PrivateRoute element={<Profil />} /> },
+  { path: '/messagerie', element: <PrivateRoute element={<Messagerie />} />},
+  { path: '/creategroupe', element: <PrivateRoute element={<CreateGroup />} />},
+  { path: '/favoris', element: <PrivateRoute element={<Favoris />} />},
+  { path: '/parameters', element: <PrivateRoute element={<Param />} />},
+  { path: '/accessdenied', element: <AccessDenied />},
 ]);
+
 
 function App() {
   return <RouterProvider router={router} />;
