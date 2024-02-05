@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Interrogation from '../components/interrogationCookies'
 
 const CookiePopup = ({ onClose }) => {
   const [accepted, setAccepted] = useState(false);
@@ -49,6 +50,7 @@ const CookiePopup = ({ onClose }) => {
           </div>
           <div className="flex justify-between items-center mb-2 relative">
             <span>Pub personnalisée</span>
+            <Interrogation />
             <button
               onClick={() => setEnablePersonalizedAds(!enablePersonalizedAds)}
               className={`relative bg-custom-orange w-10 h-6 rounded-full p-1 transition-transform duration-300 ease-in-out transform ${
