@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { getToken, getUserId } from "../helpers.js";
 import { FaRegHeart, FaHeart } from "react-icons/fa";
+import SearchBar from '../components/Searchbar.jsx';
 
 const HomePage = () => {
   const [groups, setGroups] = useState([]);
@@ -17,6 +18,9 @@ const HomePage = () => {
   const [loadingBanners, setLoadingBanners] = useState(true);
   const [error, setError] = useState("");
   const [isHovered, setIsHovered] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const allGroups = [...popularGroups, ...userGroups];
+
 
   // Récupération des favoris de l'utilisateur
   useEffect(() => {
@@ -258,6 +262,10 @@ const HomePage = () => {
     fetchUserData();
   }, []);
 
+  const filteredGroups = allGroups.filter(group =>
+    group.Titre.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+  
   return (
     <>
       <header className="bg-white flex justify-between items-center p-4">
@@ -280,27 +288,17 @@ const HomePage = () => {
           />
         </div>
       </header>
+      <SearchBar onSearch={setSearchTerm} />
 
       <section className="container mx-auto px-4 my-8">
-        <h2 className="text-2xl font-bold mb-4 text-custom-blue">
-          LES PLUS POPULAIRES
-        </h2>
+        <h2 className="text-2xl font-bold mb-4 text-custom-blue">LES PLUS POPULAIRES</h2>
         <Slider {...settings}>
-          {groups.map((group) => (
+          {filteredGroups.map((group) => (
             <Link to={`/group/${group.id}`} key={group.id}>
-              <div
-                key={group.id}
-                className="group card relative p-5 transition-transform duration-300 hover:scale-105"
-              >
-                <img
-                  src={group.ImageUrl}
-                  alt={group.Titre}
-                  className="w-full h-40 object-cover rounded-lg transition duration-300 ease-in-out group-hover:opacity-50"
-                />
+              <div className="group card relative p-5 transition-transform duration-300 hover:scale-105">
+                <img src={group.ImageUrl} alt={group.Titre} className="w-full h-40 object-cover rounded-lg transition duration-300 ease-in-out group-hover:opacity-50" />
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300 ease-in-out">
-                  <span className="text-custom-blue text-xl font-bold">
-                    {group.Titre}
-                  </span>
+                  <span className="text-custom-blue text-xl font-bold">{group.Titre}</span>
                 </div>
               </div>
             </Link>
@@ -309,61 +307,61 @@ const HomePage = () => {
       </section>
 
       <section className="container mx-auto px-4 my-8">
-        <h2 className="text-2xl font-bold mb-4 text-custom-blue">
-          VOS GROUPES
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {groupFollow.map((follow) => (
-            <div
-              className="group card relative p-5 transition-transform duration-300 hover:scale-105"
-              key={follow.groupID}
-              onMouseEnter={() => setIsHovered(follow.groupID)}
-              onMouseLeave={() => setIsHovered(null)}
-            >
-              <Link to={`/group/${follow.groupID}`}>
-                {follow.image.data && follow.image.data.attributes.url ? (
-                  <img
-                    className="w-full h-40 object-cover rounded-lg transition duration-300 ease-in-out group-hover:opacity-50"
-                    src={`http://localhost:1337${follow.image.data.attributes.url}`}
-                    alt={`Bannière du groupe ${follow.Titre || "Sans titre"}`}
-                  />
-                ) : (
-                  <div className="w-full h-40 bg-gray-200 flex items-center justify-center">
-                    Aucune bannière
-                  </div>
-                )}
-                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300 ease-in-out">
-                  <>
-                    <h3 className="text-lg text-center font-bold mb-2">
-                      {follow.Titre}
-                    </h3>
-                    {isHovered === follow.groupID && (
-                      <button
-                        className="text-custom-orange font-bold absolute top-0 right-0 p-2 z-100"
-                        onClick={() =>
-                          userFavoris.find(
-                            (favorite) => favorite.id === follow.groupID
-                          )
-                            ? removeFavorite(follow.groupID)
-                            : addFavorite(follow.groupID)
-                        }
-                      >
-                        {userFavoris.find(
-                          (favorite) => favorite.id === follow.groupID
-                        ) ? (
-                          <FaHeart />
-                        ) : (
-                          <FaRegHeart />
-                        )}
-                      </button>
-                    )}
-                  </>
-                </div>
-              </Link>
+  <h2 className="text-2xl font-bold mb-4 text-custom-blue">
+    VOS GROUPES
+  </h2>
+  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    {filteredGroupFollow.map((group) => (
+      <div
+        className="group card relative p-5 transition-transform duration-300 hover:scale-105"
+        key={group.groupID}
+        onMouseEnter={() => setIsHovered(group.groupID)}
+        onMouseLeave={() => setIsHovered(null)}
+      >
+        <Link to={`/group/${group.groupID}`}>
+          {group.image.data && group.image.data.attributes.url ? (
+            <img
+              className="w-full h-40 object-cover rounded-lg transition duration-300 ease-in-out group-hover:opacity-50"
+              src={`http://localhost:1337${group.image.data.attributes.url}`}
+              alt={`Bannière du groupe ${group.Titre || "Sans titre"}`}
+            />
+          ) : (
+            <div className="w-full h-40 bg-gray-200 flex items-center justify-center">
+              Aucune bannière
             </div>
-          ))}
-        </div>
-      </section>
+          )}
+          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300 ease-in-out">
+            <>
+              <h3 className="text-lg text-center font-bold mb-2">
+                {group.Titre}
+              </h3>
+              {isHovered === group.groupID && (
+                <button
+                  className="text-custom-orange font-bold absolute top-0 right-0 p-2 z-100"
+                  onClick={() =>
+                    userFavoris.find(
+                      (favorite) => favorite.id === group.groupID
+                    )
+                      ? removeFavorite(group.groupID)
+                      : addFavorite(group.groupID)
+                  }
+                >
+                  {userFavoris.find(
+                    (favorite) => favorite.id === group.groupID
+                  ) ? (
+                    <FaHeart />
+                  ) : (
+                    <FaRegHeart />
+                  )}
+                </button>
+              )}
+            </>
+          </div>
+        </Link>
+      </div>
+    ))}
+  </div>
+</section>
       <Navbar />
     </>
   );

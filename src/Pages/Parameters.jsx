@@ -17,8 +17,8 @@ const UserProfilePage = () => {
   const [isModified, setIsModified] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [passwordsMatch, setPasswordsMatch] = useState(true);
-  const [successMessage, setSuccessMessage] = useState('');
-  const [redirectToProfile, setRedirectToProfile] = useState(false);
+
+  const [redirectToProfile, setRedirectToProfile] = useState(false);  const [successMessage, setSuccessMessage] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [photoModified, setPhotoModified] = useState(false);
