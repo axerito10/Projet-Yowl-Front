@@ -41,19 +41,21 @@ const SearchBarUsers = ({ onSearch, onUserClick }) => {
     };
 
     return (
-        <div>
-            <input
-                type="text"
-                placeholder="Rechercher un utilisateur..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className='max-w-xs border rounded focus:outline-none focus:border-custom-orange bg-custom-gray'
-            />
-            <button className='bg-custom-orange text-custom-blue p-2 rounded-3xl' onClick={fetchUserData}>Rechercher</button>
-            <div className="max-h-24 overflow-y-auto bg-custom-gray max-w-xs">
+        <div className="flex flex-col items-center p-4">
+            <div className='flex space-x-4 items-center'>
+                <input
+                    type="text"
+                    placeholder="Rechercher un utilisateur..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className='w-full sm:max-w-xs border border-gray-300 rounded-lg focus:ring-custom-orange focus:border-custom-orange bg-white py-2 px-4 shadow-sm'
+                />
+                <button className='bg-custom-orange text-custom-blue py-2 px-4 rounded-lg shadow hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-custom-orange transition duration-150 ease-in-out' onClick={fetchUserData}>Rechercher</button>
+            </div>
+            <div className="mt-4 overflow-y-auto bg-white rounded-lg shadow max-h-60 w-full sm:max-w-xs">
                 {searchedUsers.map((user) => (
-                    <div key={user.id} className="mb-2" onClick={() => handleUserClick(user.id)}>
-                        <div className="text-custom-blue bg-custom-gray rounded-md max-w-xs">
+                    <div key={user.id} className="py-2 hover:bg-gray-100 cursor-pointer" onClick={() => handleUserClick(user.id)}>
+                        <div className="text-custom-blue px-4">
                             {user.username}
                         </div>
                     </div>

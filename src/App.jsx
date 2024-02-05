@@ -15,6 +15,7 @@ import Politique from './Pages/Politique.jsx';
 import Param from './Pages/Parameters.jsx';
 import Favoris from './Pages/Favoris.jsx';
 import Messagerie from './Pages/Messagerie.jsx'
+import EditGroup from './Pages/EditGroup.jsx'
 
 import PrivateRoute from './PrivateRoute.jsx';
 import AccessDenied from './Pages/AccessDenied.jsx';
@@ -30,6 +31,7 @@ const router = createBrowserRouter([
   { path: '/profil', element: <PrivateRoute element={<Profil />} /> },
   { path: '/messagerie', element: <PrivateRoute element={<Messagerie />} />},
   { path: '/creategroupe', element: <PrivateRoute element={<CreateGroup />} />},
+  { path: '/modificategroupe/:id', element: <PrivateRoute element={<EditGroup />} />},
   { path: '/favoris', element: <PrivateRoute element={<Favoris />} />},
   { path: '/parameters', element: <PrivateRoute element={<Param />} />},
   { path: '/accessdenied', element: <AccessDenied />},

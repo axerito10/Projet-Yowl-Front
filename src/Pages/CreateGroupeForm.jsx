@@ -10,7 +10,6 @@ const CreateGroupForm = () => {
     descriptionContenu: '',
     payant: false,
     proprietaire: '',
-    // Ajoutez les autres états ici si nécessaire
   });
 
   const [userData, setUserData] = useState(null); // État pour les données de l'utilisateur

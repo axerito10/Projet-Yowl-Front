@@ -22,7 +22,9 @@ const Messagerie = () => {
 
             // Recherche de la conversation existante entre l'utilisateur actuel et l'utilisateur sélectionné
             const existingConversation = conversationList.find(participants =>
-                participants.emails.includes(currentUserEmail) && participants.emails.includes(clickedUserEmail)
+                participants.emails.length === 2 &&
+                participants.emails.includes(currentUserEmail) &&
+                participants.emails.includes(clickedUserEmail)
             );
 
             if (!existingConversation) {
@@ -193,15 +195,20 @@ const Messagerie = () => {
     }, []);
 
     return (
-        <div className='font-Avenir'>
+        <div className="font-Avenir min-h-screen flex flex-col">
             <Header />
-            <h1 className="text-3xl text-black">MES MESSAGES</h1>
-            <SearchBarUsers onSearch={handleSearch} onUserClick={handleUserClick} />
-            
+            <div className="mx-auto max-w-4xl py-6 p-3">
+                <h1 className="text-3xl font-bold text-gray-900 mb-4">MES MESSAGES</h1>
+            </div>
+            <div className="mx-auto p-3">
+                <SearchBarUsers onSearch={handleSearch} onUserClick={handleUserClick} />
+            </div>
             {selectedRoom && (
-                <ConversationPopup room={selectedRoom} onClose={handleClosePopup} />
+                <div className="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex justify-center items-center">
+                    <ConversationPopup room={selectedRoom} onClose={handleClosePopup} />
+                </div>
             )}
-
+ 
             <Navbar />
         </div>
     );
