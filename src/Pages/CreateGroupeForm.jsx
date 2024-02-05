@@ -23,6 +23,8 @@ const CreateGroupForm = () => {
   const [groupBanners, setGroupBanners] = useState([]);
   const [chapters, setChapters] = useState([{ titre: '', description: '' }]);
   const [chapterIds, setChapterIds] = useState([]);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [redirectToProfile, setRedirectToProfile] = useState(false);
 
   const handleCategorySelection = (categoryId) => {
     if (selectedCategories.includes(categoryId)) {
@@ -178,16 +180,19 @@ const CreateGroupForm = () => {
         body: formData,
       });
   
-      if (response.ok) {
-        const data = await response.json();
-        console.log('Groupe créé avec les chapitres :', data);
-        // Redirection ou mise à jour de l'UI ici
-      } else {
-        const errorData = await response.json();
-        console.error('Échec de la création du groupe avec les chapitres', errorData);
+      if (!response.ok) {
+        throw new Error('Erreur lors de la publication du groupe');
       }
+  
+      setSuccessMessage('Le groupe à été publié.');
+      setTimeout(() => {
+        setRedirectToProfile(true);
+        window.location.href = '/profil';
+      }, 2000);
     } catch (error) {
-      console.error('Erreur lors de la création du groupe avec les chapitres', error);
+      console.error(error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -364,6 +369,13 @@ const CreateGroupForm = () => {
           />
         </div>
       </header>
+      <div>
+
+      {successMessage && (
+            <div className="bg-green-200 text-green-700 p-3 mb-4 rounded">
+              {successMessage}
+            </div>
+          )}
 
       <div className='flex item-center justify-center'>
         <h1 className="text-2xl font-black mb-4 text-custom-blue">Création de votre groupe</h1>
@@ -564,6 +576,7 @@ const CreateGroupForm = () => {
       </div>
 
       </form>
+      </div>
     </>
   );
 };
