@@ -17,6 +17,7 @@ const HomePage = () => {
   const [loadingBanners, setLoadingBanners] = useState(true);
   const [error, setError] = useState("");
   const [isHovered, setIsHovered] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
   // Récupération des favoris de l'utilisateur
   useEffect(() => {
@@ -54,6 +55,12 @@ const HomePage = () => {
 
     fetchUserData();
   }, []);
+
+  const filteredGroups = searchTerm
+    ? groups.filter(group =>
+        group.Titre.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    : groups;  
 
   // Fonction bouton ajout aux favoris
   const addFavorite = async (id) => {
@@ -281,15 +288,48 @@ const HomePage = () => {
         </div>
       </header>
 
+      <div className="container mx-auto px-4 my-8">
+        <input
+          type="text"
+          placeholder="Rechercher..."
+          className="p-2 border border-gray-300 rounded shadow w-full mb-4"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      </div>
+
+      {searchTerm ? (
+        <section className="container mx-auto px-4 my-8">
+          <h2 className="text-2xl font-bold mb-4 text-custom-blue">
+            Résultats de recherche
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredGroups.map((group) => (
+              <Link to={`/group/${group.id}`} key={group.id}>
+                <div className="group card relative p-5 transition-transform duration-300 hover:scale-105">
+                  <img
+                    src={group.ImageUrl || "/default-banner.jpg"}
+                    alt={group.Titre}
+                    className="w-full h-40 object-cover rounded-lg"
+                  />
+                  <div className="text-center mt-2">
+                    <span className="text-lg font-semibold">{group.Titre}</span>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      ) : (
+        <>
       <section className="container mx-auto px-4 my-8">
         <h2 className="text-2xl font-bold mb-4 text-custom-blue">
-          LES PLUS POPULAIRES
+          VOS RECOMMANDATIONS
         </h2>
         <Slider {...settings}>
-          {groups.map((group) => (
+          {groups.filter(group => group.Titre.toLowerCase().includes(searchTerm.toLowerCase())).map((group) => (
             <Link to={`/group/${group.id}`} key={group.id}>
               <div
-                key={group.id}
                 className="group card relative p-5 transition-transform duration-300 hover:scale-105"
               >
                 <img
@@ -364,6 +404,34 @@ const HomePage = () => {
           ))}
         </div>
       </section>
+
+      <section className="container mx-auto px-4 my-8">
+        <h2 className="text-2xl font-bold mb-4 text-custom-blue">
+          LES PLUS POPULAIRES
+        </h2>
+        <Slider {...settings}>
+          {groups.filter(group => group.Titre.toLowerCase().includes(searchTerm.toLowerCase())).map((group) => (
+            <Link to={`/group/${group.id}`} key={group.id}>
+              <div
+                className="group card relative p-5 transition-transform duration-300 hover:scale-105"
+              >
+                <img
+                  src={group.ImageUrl}
+                  alt={group.Titre}
+                  className="w-full h-40 object-cover rounded-lg transition duration-300 ease-in-out group-hover:opacity-50"
+                />
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300 ease-in-out">
+                  <span className="text-custom-blue text-xl font-bold">
+                    {group.Titre}
+                  </span>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </Slider>
+      </section>
+      </>
+      )}
       <Navbar />
     </>
   );
