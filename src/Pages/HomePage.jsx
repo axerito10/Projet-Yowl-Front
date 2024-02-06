@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { getToken, getUserId } from "../helpers.js";
 import { FaRegHeart, FaHeart } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 const HomePage = () => {
   const [groups, setGroups] = useState([]);
@@ -18,6 +19,8 @@ const HomePage = () => {
   const [error, setError] = useState("");
   const [isHovered, setIsHovered] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [categories, setCategories] = useState([]);
+  const navigate = useNavigate();
 
   // Récupération des favoris de l'utilisateur
   useEffect(() => {
@@ -265,6 +268,29 @@ const HomePage = () => {
     fetchUserData();
   }, []);
 
+  const handleCategoryClick = (categoryName) => {
+    // Rediriger vers la page de la catégorie avec les groupes correspondants
+    navigate(`/categorie/${categoryName}`);
+  };
+
+  useEffect(() => {
+    fetch("http://localhost:1337/api/categories", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${getToken()}`,
+      },
+    })
+    .then(response => response.json())
+    .then(data => {
+      setCategories(data.data.map(cat => cat.attributes.category)); // Supposons que 'category' est le champ dans Strapi
+    })
+    .catch(error => {
+      console.error("Erreur lors de la récupération des catégories: ", error);
+      setError("Erreur lors de la récupération des catégories");
+    });
+  }, []);
+
   return (
     <>
       <header className="bg-white flex justify-between items-center p-4">
@@ -292,11 +318,24 @@ const HomePage = () => {
         <input
           type="text"
           placeholder="Rechercher..."
-          className="p-2 border border-gray-300 rounded shadow w-full mb-4"
+          className="p-2 border border-gray-300 rounded-full shadow w-full mb-4"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
+      
+      <div className="flex flex-wrap justify-center items-center gap-2 my-4">
+        {categories.map((category, index) => (
+          <button
+            key={index}
+            onClick={() => handleCategoryClick(category)}
+            className="bg-custom-orange hover:bg-cutom-yellow text-custom font-bold py-2 px-4 rounded-full"
+          >
+            {category}
+          </button>
+        ))}
       </div>
+      </div>
+
 
       {searchTerm ? (
         <section className="container mx-auto px-4 my-8">
