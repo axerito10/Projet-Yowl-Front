@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { getToken, getUserId } from "../helpers.js";
 import { FaRegHeart, FaHeart } from "react-icons/fa";
+import Header from "../components/Header.jsx";
 
 const HomePage = () => {
   const [groups, setGroups] = useState([]);
@@ -267,26 +268,7 @@ const HomePage = () => {
 
   return (
     <>
-      <header className="bg-white flex justify-between items-center p-4">
-        {/* Logo SKILLS à gauche */}
-        <div className="flex items-center">
-          <img
-            className="h-11 align-middle ml-24"
-            src="https://cdn.discordapp.com/attachments/1182732629573910569/1196830881592131677/Logo_2_Skills.png"
-            alt="Skills logo"
-          />
-          <span className="text-6xl font-bold text-custom-blue">KILLS</span>
-        </div>
-
-        {/* Avatar de profil à droite */}
-        <div className="flex items-center mr-24">
-          <img
-            src="../public/no-profil-picture.png"
-            alt="Profile"
-            className="w-20 border-gray-300 mr-13"
-          />
-        </div>
-      </header>
+      <Header />
 
       <div className="container mx-auto px-4 my-8">
         <input

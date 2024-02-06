@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getToken } from '../helpers';
 
-const SearchBarUsers = ({ onSearch, onUserClick }) => {
+const SearchBarUsers = ({ onSearch, onUserClick, currentUserId }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [searchedUsers, setSearchedUsers] = useState([])
 
@@ -21,7 +21,7 @@ const SearchBarUsers = ({ onSearch, onUserClick }) => {
             if (response.ok) {
                 const data = await response.json();
                 onSearch(data.data);
-                setSearchedUsers(data)
+                setSearchedUsers(data.filter(user => user.id !== currentUserId));
             } else {
                 throw new Error("Erreur lors de la récupération des données utilisateurs");
             }

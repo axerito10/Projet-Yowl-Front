@@ -5,14 +5,73 @@ import SearchBarUsers from '../components/SearchBarUsers.jsx';
 import Navbar from '../components/Navbar.jsx';
 import Header from '../components/Header.jsx';
 import ConversationPopup from '../components/ConversationPopup.jsx';
+import Discussions from '../components/Discussions.jsx'
 
 const Messagerie = () => {
-    const [channelDiscussion, setChannelDiscussion] = useState("test");
+    const [channelDiscussion, setChannelDiscussion] = useState("");
     const [conversationList, setConversationList] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchResults, setSearchResults] = useState([]);
     const [selectedRoom, setSelectedRoom] = useState(null);
+    const [currentUserId, setCurrentUserId] = useState(null);
 
+    const fetchData = async () => {
+        try {
+            // Récupération de l'ID de l'utilisateur
+            const userResponse = await fetch(
+                `http://localhost:1337/api/users/me?populate=*`,
+                {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${getToken()}`,
+                    },
+                }
+            );
+
+            if (userResponse.ok) {
+                const userData = await userResponse.json();
+                setCurrentUserId(userData.id);
+            } else {
+                throw new Error("Erreur lors de la récupération des données utilisateurs");
+            }
+
+            // Récupération de la liste des conversations
+            const conversationsResponse = await fetch(
+                `http://localhost:1337/api/messageries?populate=*`,
+                {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${getToken()}`,
+                    },
+                }
+            );
+
+            if (conversationsResponse.ok) {
+                const conversationsData = await conversationsResponse.json();
+                setConversationList(
+                    conversationsData.data.map(conversation => ({
+                        emails: conversation.attributes.between.data.map(data => data.attributes.email),
+                        room: conversation.attributes.room,
+                    }))
+                );
+            } else {
+                throw new Error("Erreur lors de la récupération des données de conversation");
+            }
+        } catch (error) {
+            console.error("Erreur lors de la récupération des données", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Récupération ID de l'utilisateur et liste des conversations au chargement initial
+    useEffect(() => {
+        fetchData();
+    }, []);
+
+    // Gestion du clic
     const handleUserClick = async (userId, existingRoom) => {
         try {
             const currentUserEmail = await getCurrentUserEmail();
@@ -41,13 +100,14 @@ const Messagerie = () => {
                 setSelectedRoom(existingRoom);
             }
 
-            // Do something with the user ID, for example, open a chat window
-            console.log(`User clicked with ID: ${userId}`);
+            // Récupération de la liste des conversations existantes après chaque clic
+            fetchData();
         } catch (error) {
             console.error("Erreur lors de la gestion du clic sur l'utilisateur", error);
         }
     };
 
+    // Récupérer l'email de l'utilisateur
     const getCurrentUserEmail = async () => {
         try {
             const response = await fetch(
@@ -78,6 +138,7 @@ const Messagerie = () => {
         }
     };
 
+    // Récupérer l'email de l'utilisateur sur lequel on clic
     const getUserEmail = async (userId) => {
         try {
             const response = await fetch(
@@ -108,6 +169,7 @@ const Messagerie = () => {
         }
     };
 
+    // Créer une nouvelle conversation
     const createNewConversation = async (currentUserId, userId, newRoom) => {
         try {
             const postData = {
@@ -139,60 +201,61 @@ const Messagerie = () => {
         }
     }
 
+    // Générer un uuid pour la room 
     const generateUniqueRoom = (userId) => {
         const uniqueId = uuidv4();
         const uniqueRoom = `${uniqueId}-${userId}`;
         return uniqueRoom;
     };
 
+    // Rechercher
     const handleSearch = (data) => {
         setSearchResults(data);
     };
 
+    // Fermer
     const handleClosePopup = () => {
         setSelectedRoom(null);
     };
 
-    useEffect(() => {
-        const fetchUserData = async () => {
-            try {
-                const response = await fetch(
-                    `http://localhost:1337/api/messageries?populate=*`,
-                    {
-                        method: "GET",
-                        headers: {
-                            "Content-Type": "application/json",
-                            Authorization: `Bearer ${getToken()}`,
-                        },
-                    }
-                );
-    
-                if (response.ok) {
-                    const data = await response.json();
-                    setConversationList(
-                        data.data.map(conversation => ({
-                            emails: conversation.attributes.between.data.map(data => data.attributes.email),
-                            room: conversation.attributes.room,
-                        }))
-                    )
-                    console.log("Liste des conversations existantes : ", data.data)
-                } else {
-                    throw new Error(
-                        "Erreur lors de la récupération des données utilisateurs"
-                    );
+    // Récupération de la liste des conversations existantes
+    const fetchUserData = async () => {
+        try {
+            const response = await fetch(
+                `http://localhost:1337/api/messageries?populate=*`,
+                {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${getToken()}`,
+                    },
                 }
-            } catch (error) {
-                console.error(
-                    "Erreur lors de la récupération des données utilisateurs",
-                    error
-                );
-            } finally {
-                setLoading(false);
-            }
-        };
+            );
 
-        fetchUserData();
-    }, []);
+            if (response.ok) {
+                const data = await response.json();
+                setConversationList(
+                    data.data.map(conversation => ({
+                        emails: conversation.attributes.between.data.map(data => data.attributes.email),
+                        room: conversation.attributes.room,
+                    }))
+                )
+            } else {
+                throw new Error(
+                    "Erreur lors de la récupération des données utilisateurs"
+                );
+            }
+        } catch (error) {
+            console.error(
+                "Erreur lors de la récupération des données utilisateurs",
+                error
+            );
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    
 
     return (
         <div className="font-Avenir min-h-screen flex flex-col">
@@ -201,7 +264,14 @@ const Messagerie = () => {
                 <h1 className="text-3xl font-bold text-gray-900 mb-4">MES MESSAGES</h1>
             </div>
             <div className="mx-auto p-3">
-                <SearchBarUsers onSearch={handleSearch} onUserClick={handleUserClick} />
+                <SearchBarUsers
+                    onSearch={handleSearch}
+                    onUserClick={handleUserClick}
+                    currentUserId={currentUserId}
+                />
+            </div>
+            <div>
+                <Discussions currentUserEmail={getCurrentUserEmail} onUserClick={handleUserClick}/>
             </div>
             {selectedRoom && (
                 <div className="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex justify-center items-center">
