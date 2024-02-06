@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import { getToken, getUserId } from '../helpers';
 import { FaSave, FaEye, FaEyeSlash, FaArrowLeft } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
 import defaultImage from '../../public/no-profil-picture.png';
+import CookiePopup from './CookiePopup.jsx';
 
 const UserProfilePage = () => {
   const [user, setUser] = useState({
@@ -27,26 +28,23 @@ const UserProfilePage = () => {
   const isValidEmail = (email) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   };
-  
-
 
   const handleFileInputChange = (event) => {
     const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setPhotoURL(reader.result); 
+        setPhotoURL(reader.result);
       };
-      reader.readAsDataURL(file); 
+      reader.readAsDataURL(file);
     }
     setUser({
       ...user,
       photo: file,
     });
     setPhotoModified(true);
-    setIsModified(true); 
+    setIsModified(true);
   };
-  
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -97,10 +95,10 @@ const UserProfilePage = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     setIsSubmitting(true);
-  
+
     setErrorMessage('');
     setSuccessMessage('');
-  
+
     if (!isValidEmail(user.email)) {
       setErrorMessage("L'adresse email n'est pas correcte.");
       setIsSubmitting(false);
@@ -118,16 +116,16 @@ const UserProfilePage = () => {
 
     setErrorMessage('');
     setErrorMessage2('');
-  
+
     const dataToSend = {
       email: user.email,
       telephone: user.telephone,
     };
-  
+
     if (user.password) {
       dataToSend.password = user.password;
     }
-  
+
     try {
       const response = await fetch(`http://localhost:1337/api/users/${getUserId()}`, {
         method: 'PUT',
@@ -137,11 +135,11 @@ const UserProfilePage = () => {
         },
         body: JSON.stringify(dataToSend),
       });
-  
+
       if (!response.ok) {
         throw new Error('Erreur lors de la mise à jour du profil');
       }
-  
+
       setSuccessMessage('Les modifications ont été enregistrées.');
       setTimeout(() => {
         setRedirectToProfile(true);
@@ -162,21 +160,37 @@ const UserProfilePage = () => {
     setShowConfirmPassword(!showConfirmPassword);
   };
 
+  const [showCookiePopup, setShowCookiePopup] = useState(false);
+
+  // Ne pas afficher automatiquement le CookiePopup au chargement de la page
+  useEffect(() => {
+    // setShowCookiePopup(true);
+  }, []);
+
+  const closeCookiePopup = () => {
+    setShowCookiePopup(false);
+  };
+
+  const handleCookieLinkClick = () => {
+    // Activer l'affichage du CookiePopup lorsque l'utilisateur clique sur le lien
+    setShowCookiePopup(true);
+  };
+
   return (
     <>
       <Navbar />
       <div className="bg-white font-Avenir min-h-screen">
-    <div className="container mx-auto p-4 sm:p-6 lg:p-8">
-    {errorMessage && (
-        <div className="bg-red-200 text-red-700 p-3 mb-4 rounded">
-          {errorMessage}
-        </div>
-      )}
-      {errorMessage2 && (
-        <div className="bg-red-200 text-red-700 p-3 mb-4 rounded">
-          {errorMessage2}
-        </div>
-      )}
+        <div className="container mx-auto p-4 sm:p-6 lg:p-8">
+          {errorMessage && (
+            <div className="bg-red-200 text-red-700 p-3 mb-4 rounded">
+              {errorMessage}
+            </div>
+          )}
+          {errorMessage2 && (
+            <div className="bg-red-200 text-red-700 p-3 mb-4 rounded">
+              {errorMessage2}
+            </div>
+          )}
           <div className='flex justify-between items-center mb-10'>
             <Link to="/profil" className='text-orange-500 text-2xl mr-4'>
               <FaArrowLeft />
@@ -197,9 +211,9 @@ const UserProfilePage = () => {
             />
             <label htmlFor="profilePhotoInput" className="flex justify-center cursor-pointer">
               <div className="relative w-32 h-32">
-                <img 
-                  className="rounded-full border-2 border-gray-300 h-full w-full object-cover" 
-                  src={photoURL} 
+                <img
+                  className="rounded-full border-2 border-gray-300 h-full w-full object-cover"
+                  src={photoURL}
                   alt="Photo de profil"
                 />
                 <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 hover:opacity-100 rounded-full transition-opacity duration-300">
@@ -287,6 +301,20 @@ const UserProfilePage = () => {
               </button>
             </div>
           </form>
+
+          {/* Ajoutez le lien "gérer mes cookies" ici */}
+          <div className="text-center mt-4">
+            {/* Utilisez une fonction de gestion d'événements pour mettre à jour l'état */}
+            <button>
+            <span className="text-blue-500 underline" onClick={handleCookieLinkClick}>
+              Gérer mes cookies
+            </span>
+            </button>
+
+          </div>
+
+          {/* Intégrez le CookiePopup */}
+          {showCookiePopup && <CookiePopup onClose={() => setShowCookiePopup(false)} />}
         </div>
       </div>
     </>
@@ -294,6 +322,3 @@ const UserProfilePage = () => {
 };
 
 export default UserProfilePage;
-
-
-//POUR PUSH

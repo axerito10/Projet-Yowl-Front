@@ -102,6 +102,11 @@ const Profil = () => {
                     <h1 className='text-2xl font-bold text-center mb-4 text-gray-800'>Bonjour, {userData.username}</h1>
                     <p className='text-gray-600 text-center'>Votre adresse mail : {userData.email}</p>
                     <p className='text-gray-600 text-center'>Votre numéro de téléphone : {userData.telephone ? `+33 ${userData.telephone}` : 'Non renseigné'}</p>
+                    <div className='text-center'>
+                        <Link to="/politique" className="text-blue-500 underline ml-2">
+                        Politique de confidentialité
+                        </Link>
+                    </div>
                 </div>
                 
                 <h2 className='text-xl font-bold text-gray-800 mb-4'>Vos groupes</h2>
