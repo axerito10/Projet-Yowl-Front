@@ -1,120 +1,224 @@
 import React, { useState, useEffect } from 'react';
 import { getToken } from '../helpers.js';
 import defaultImage from '../../public/no-profil-picture.png';
+import { useNavigate } from 'react-router-dom';
+
 
 const EditGroup = () => {
-    const [error, setError] = useState(null);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
+  const urlParts = window.location.pathname.split('/');
+  const groupeID = urlParts[urlParts.length - 1];
+  const [userData, setUserData] = useState(null); // État pour les données de l'utilisateur
+  const [image, setImage] = useState(null); // État pour l'image du groupe
+  const [categories, setCategories] = useState([]); // État pour les catégories chargées depuis Strapi
+  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [showCategories, setShowCategories] = useState(false);
+  const [userToken, setUserToken] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [groupBanners, setGroupBanners] = useState([]);
+  const [chapters, setChapters] = useState([{ titre: '', description: '' }]);
+  const [chapterIds, setChapterIds] = useState([]);
+  const [userMail, setUserMail] = useState("")
+  const [group, setGroup] = useState({
+      titre: '',
+      description: '',
+      titreContenu: '',
+      descriptionContenu: '',
+      payant: false,
+      proprietaire: '',
+  });
 
-    const urlParts = window.location.pathname.split('/');
-    const groupeID = urlParts[urlParts.length - 1];
-    const [userData, setUserData] = useState(null); // État pour les données de l'utilisateur
-    const [image, setImage] = useState(null); // État pour l'image du groupe
-    const [categories, setCategories] = useState([]); // État pour les catégories chargées depuis Strapi
-    const [selectedCategories, setSelectedCategories] = useState([]);
-    const [showCategories, setShowCategories] = useState(false);
-    const [userToken, setUserToken] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [groupBanners, setGroupBanners] = useState([]);
-    const [chapters, setChapters] = useState([{ titre: '', description: '' }]);
-    const [chapterIds, setChapterIds] = useState([]);
-    const [userMail, setUserMail] = useState("")
-    const [group, setGroup] = useState({
-        titre: '',
-        description: '',
-        titreContenu: '',
-        descriptionContenu: '',
-        payant: false,
-        proprietaire: '',
+
+  // Sauvegarde
+  // Vérification que l'utilisateur a bien les droits pour modifier le groupe
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Fetch des données utilisateur
+        const userResponse = await fetch(`http://localhost:1337/api/users/me?populate=*`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${getToken()}`,
+          },
+        });
+
+        if (userResponse.ok) {
+          const userData = await userResponse.json();
+          const userMail = userData?.email || '';
+          console.log("user mail :", userMail);
+
+          // Fetch des données du groupe
+          const groupResponse = await fetch(`http://localhost:1337/api/groupes/${groupeID}?populate=*`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${getToken()}`,
+            },
+          });
+
+          if (groupResponse.ok) {
+            const groupData = await groupResponse.json();
+            const groupOwnerMail = groupData.data.attributes.owner.data.attributes.email;
+
+            if (groupOwnerMail !== userMail) {
+              console.log("Différents");
+              navigate('/profil');
+            } else {
+              console.log("Identiques");
+              console.log(groupData.data.attributes)
+              setGroup({
+                titre: groupData.data.attributes.Titre,
+                description: groupData.data.attributes.Description,
+                payant: groupData.data.attributes.Payant,
+              });
+            }
+          } else {
+            throw new Error('Erreur lors de la récupération des données du groupe');
+          }
+        } else {
+          throw new Error('Erreur lors de la récupération des données de l\'utilisateur');
+        }
+      } catch (error) {
+        console.error('Erreur lors de la récupération des données', error);
+        setError('Erreur lors de la récupération des données');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [groupeID, navigate]);
+
+  if (loading) {
+    return <p>Chargement en cours...</p>;
+  }
+
+  if (error) {
+    return <p>Une erreur s'est produite : {error}</p>;
+  }
+
+  
+
+  // Fonction d'envoie du formulaire sur la base de donnée
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    for (const chapter of chapters) {
+      await addChapterAndLinkToGroup(chapter);
+    }
+
+    const owner = userData ? String(userData.id) : '';
+
+
+    // Créez un objet FormData pour envoyer l'image
+    const formData = new FormData();
+    if (image) {
+      formData.append('files.image', image); // Ajoutez l'image ici
+    }
+
+  
+    // Créez l'objet à envoyer, avec une clé "data"
+    const dataToSend = {
+      data: {
+        Titre: group.titre,
+        Description: group.description,
+        Titre_contenu: group.titreContenu,
+        Description_contenu: group.descriptionContenu,
+        Proprietaire: owner, 
+        Payant: group.payant,
+        categories: selectedCategories.map((categoryId) => categoryId),
+        chapitres: chapterIds,
+        owner: owner,
+      },
+    };    
+  
+    // Convertissez l'objet en JSON et ajoutez-le au FormData
+    formData.append('data', JSON.stringify(dataToSend.data));
+  
+    try {
+      const response = await fetch(`http://localhost:1337/api/groupes${groupeID}?populate=*`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${userToken}`,
+        },
+        body: formData,
+      });
+  
+      if (!response.ok) {
+        throw new Error('Erreur lors de la publication du groupe');
+      }
+  
+      setSuccessMessage('Le groupe à été publié.');
+      setTimeout(() => {
+        setRedirectToProfile(true);
+        window.location.href = '/profil';
+      }, 2000);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+   
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setGroup({ ...group, [name]: value });
+  };
+
+  const handleCheckboxChange = (e) => {
+    const { name, checked } = e.target;
+    setGroup({ ...group, [name]: checked });
+  };
+
+  const handleImageChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      setImage(e.target.files[0]);
+    }
+  };
+
+  const toggleCategories = (event) => {
+    event.preventDefault(); // This prevents the default form submission behavior
+    setShowCategories(!showCategories);
+  };
+  
+  const createChapter = async (chapter) => {
+    const token = getToken();
+    const response = await fetch('http://localhost:1337/api/chapitres', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ data: chapter })
     });
 
-    // Récupération des données utilisateurs
-    useEffect(() => {
-        const fetchUserData = async () => {
-            try {
-                const response = await fetch(`http://localhost:1337/api/users/me?populate=*`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: `Bearer ${getToken()}`,
-                    },
-                });
-    
-                if (response.ok) {
-                    const data = await response.json();
-                    const check = data.data.attributes.owner.data.attributes.email
-                    console.log("data: ", check)
-                    console.log("data check: ", userMail)
+    if (response.ok) {
+      const data = await response.json();
+      return data.data.id; // Return the ID of the created chapter
+    } else {
+      // Handle error
+      console.error('Error creating chapter');
+    }
+  };
 
-                    if (check !== userMail){
-                        console.log("différent")
+  const addChapter = () => {
+    setChapters([...chapters, { titre: '', description: '' }]);
+  };
 
-                    }
-                    else {
-                        console.log("identique")
-                    }
+  // Function to handle chapter form submission
+  const addChapterAndLinkToGroup = async (index) => {
+    const id = await createChapter(chapters[index]);
+    if (id) {
+      setChapterIds(prevIds => [...prevIds, id]); // Add the new chapter's ID to the state
+    }
+  };
 
-                    }
-    
-    
-                 else {
-                    throw new Error('Erreur lors de la récupération des données de l\'utilisateur');
-                }
-            } catch (error) {
-                console.error('Erreur lors de la récupération des données de l\'utilisateur', error);
-                setError('Erreur lors de la récupération des données de l\'utilisateur');
-            } finally {
-                setLoading(false);
-            }
-        };
-    
-        fetchUserData();
-    }, []);
-
-    // Récupération des données du groupe
-    useEffect(() => {
-        const fetchUserData = async () => {
-            try {
-                const response = await fetch(`http://localhost:1337/api/groupes/${groupeID}?populate=*`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: `Bearer ${getToken()}`,
-                    },
-                });
-    
-                if (response.ok) {
-                    const data = await response.json();
-                    const check = data.data.attributes.owner.data.attributes.email
-                    console.log("data: ", check)
-                    console.log("data check: ", userMail)
-
-                    if (check !== userMail){
-                        console.log("différent")
-
-                    }
-                    else {
-                        console.log("identique")
-                    }
-
-                    }
-    
-    
-                 else {
-                    throw new Error('Erreur lors de la récupération des données de l\'utilisateur');
-                }
-            } catch (error) {
-                console.error('Erreur lors de la récupération des données de l\'utilisateur', error);
-                setError('Erreur lors de la récupération des données de l\'utilisateur');
-            } finally {
-                setLoading(false);
-            }
-        };
-    
-        fetchUserData();
-    }, []);
-
-   
-   
+  const handleCategoryChange = (e) => {
+    const values = Array.from(e.target.selectedOptions, (option) => option.value);
+    setSelectedCategories(values);
+  };
 
   return (
     <>
@@ -325,7 +429,7 @@ const EditGroup = () => {
           </label>
         </div>
 
-      <div class="mt-8 flex justify-center">
+      <div className="mt-8 flex justify-center">
         <button type="submit" className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-custom-blue bg-custom-orange hover:bg-custom-yellow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-custom-orange">
           Créer Groupe
         </button>
