@@ -566,7 +566,7 @@ const CreateGroupForm = () => {
           </label>
         </div>
 
-      <div class="mt-8 flex justify-center">
+      <div className="mt-8 flex justify-center">
         <button type="submit" className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-custom-blue bg-custom-orange hover:bg-custom-yellow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-custom-orange">
           Créer Groupe
         </button>
